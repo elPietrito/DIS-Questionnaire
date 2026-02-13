@@ -36,6 +36,9 @@ AUDIO_INSTRUCTION_TEXT = "Please listen carefully and try writing what you heard
 # Prompt for text response field
 TEXT_RESPONSE_PROMPT = "Type your response here:"
 
+# Special value for "No answer" option
+NO_ANSWER_VALUE = "No answer"  # This will be saved in CSV when participant chooses not to answer
+
 # --------------------------------------------
 # Audio 1 Likert Questions
 # ADD/REMOVE questions by editing this list

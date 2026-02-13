@@ -71,16 +71,26 @@ def render_experimenter_page():
         return
     
     # ============================================
-    # SHOW PARTICIPANT ID AND PROGRESS
+    # SHOW PARTICIPANT LINK (always visible once ID is set)
     # ============================================
     
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.info(f"**Participant ID:** {st.session_state.participant_id}")
-    with col2:
-        if st.button("🔄 Change Participant", key="change_participant"):
-            reset_session()
-            st.rerun()
+    st.success(f"**Participant ID:** {st.session_state.participant_id}")
+    
+    # Get the participant link
+    # Use a simpler approach that works across different Streamlit versions
+    import socket
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    participant_url = f"http://{local_ip}:8501/?participant={st.session_state.participant_id}"
+    
+    with st.expander("🔗 **Participant Link** (Click to expand)", expanded=False):
+        st.code(participant_url, language=None)
+        st.caption("📱 Share this link with the participant to access Part 2")
+        st.caption("💡 Make sure both devices are on the same WiFi/hotspot")
+    
+    if st.button("🔄 Change Participant ID", key="change_participant"):
+        reset_session()
+        st.rerun()
     
     st.markdown("---")
     
@@ -151,24 +161,29 @@ def render_experimenter_page():
     if current_episode.get('audio1_path') and os.path.exists(current_episode['audio1_path']):
         st.success(f"✅ Audio 1 loaded: {current_episode.get('audio1_filename', 'audio1')}")
         st.audio(current_episode['audio1_path'])
-    
-    # Likert scale for Audio 1
-    current_episode['likert1'] = st.select_slider(
-        f"{PART1_LIKERT_1_LABEL} (Audio 1)",
-        options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-        value=current_episode.get('likert1') or LIKERT_MIN,
-        key=f"likert1_{episode_num}"
-    )
-    
-    # Multiple choice for Audio 1
-    choice1_value = current_episode.get('choice1')
-    choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
-    current_episode['choice1'] = st.selectbox(
-        "Personnage (Audio 1)",
-        options=PART1_CHOICE_OPTIONS,
-        index=choice1_index,
-        key=f"choice1_{episode_num}"
-    )
+        
+        # Likert scale for Audio 1 (only if audio exists)
+        current_episode['likert1'] = st.select_slider(
+            f"{PART1_LIKERT_1_LABEL} (Audio 1)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert1') or LIKERT_MIN,
+            key=f"likert1_{episode_num}"
+        )
+        
+        # Multiple choice for Audio 1 (only if audio exists)
+        choice1_value = current_episode.get('choice1')
+        choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice1'] = st.selectbox(
+            "Personnage (Audio 1)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice1_index,
+            key=f"choice1_{episode_num}"
+        )
+    else:
+        # No audio uploaded - clear any saved values
+        current_episode['likert1'] = None
+        current_episode['choice1'] = None
+        st.info("⬆️ Upload Audio 1 to answer questions")
     
     st.markdown("---")
     
@@ -199,71 +214,47 @@ def render_experimenter_page():
     if current_episode.get('audio2_path') and os.path.exists(current_episode['audio2_path']):
         st.success(f"✅ Audio 2 loaded: {current_episode.get('audio2_filename', 'audio2')}")
         st.audio(current_episode['audio2_path'])
-    
-    # Likert scale for Audio 2
-    current_episode['likert2'] = st.select_slider(
-        f"{PART1_LIKERT_2_LABEL} (Audio 2)",
-        options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-        value=current_episode.get('likert2') or LIKERT_MIN,
-        key=f"likert2_{episode_num}"
-    )
-    
-    # Multiple choice for Audio 2
-    choice2_value = current_episode.get('choice2')
-    choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
-    current_episode['choice2'] = st.selectbox(
-        "Personnage (Audio 2)",
-        options=PART1_CHOICE_OPTIONS,
-        index=choice2_index,
-        key=f"choice2_{episode_num}"
-    )
+        
+        # Likert scale for Audio 2 (only if audio exists)
+        current_episode['likert2'] = st.select_slider(
+            f"{PART1_LIKERT_2_LABEL} (Audio 2)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert2') or LIKERT_MIN,
+            key=f"likert2_{episode_num}"
+        )
+        
+        # Multiple choice for Audio 2 (only if audio exists)
+        choice2_value = current_episode.get('choice2')
+        choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice2'] = st.selectbox(
+            "Personnage (Audio 2)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice2_index,
+            key=f"choice2_{episode_num}"
+        )
+    else:
+        # No audio uploaded - clear any saved values
+        current_episode['likert2'] = None
+        current_episode['choice2'] = None
+        st.info("⬆️ Upload Audio 2 to answer questions")
     
     st.markdown("---")
     
     # ============================================
-    # FINISH PART 1 SECTION
+    # START DEBRIEF SECTION
     # ============================================
     
-    st.subheader("✅ Ready to Start Participant Session?")
+    st.subheader("✅ Ready to Start Part 2?")
     
     active_episodes = get_active_episodes()
     st.info(f"**{len(active_episodes)} episode(s)** ready for participant")
     
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if st.button("🔗 Generate Participant Link", type="primary", use_container_width=True):
-            if len(active_episodes) == 0:
-                st.error("Please fill at least one episode before generating link")
-            else:
-                st.session_state.part1_completed = True
-                st.rerun()
-    
-    with col2:
-        if st.button("👤 Start Debrief (Local)", type="secondary", use_container_width=True):
-            if len(active_episodes) == 0:
-                st.error("Please fill at least one episode before starting debrief")
-            else:
-                # This will show Part 2 interface on the same computer
-                st.session_state.show_local_debrief = True
-                st.rerun()
-    
-    st.caption("💡 **Generate Link**: Get URL to share with remote participant | **Start Debrief**: Do Part 2 on this computer")
-    
-    # ============================================
-    # SHOW PARTICIPANT LINK IF READY
-    # ============================================
-    
-    if st.session_state.part1_completed:
-        st.success("✅ Experimenter part completed!")
-        st.markdown("### 🔗 Participant Link")
-        
-        # Get current URL and add participant parameter
-        participant_url = f"{st.runtime.config.get_option('browser.serverAddress')}:{st.runtime.config.get_option('server.port')}/?participant={st.session_state.participant_id}"
-        
-        st.code(participant_url, language=None)
-        st.info("👆 Share this link with the participant. They will use it to complete Part 2.")
-        
-        if st.button("🔄 Edit Episodes (Restart Part 1)"):
-            st.session_state.part1_completed = False
+    if st.button("👤 Start Debrief (Part 2 on this computer)", type="primary", use_container_width=True):
+        if len(active_episodes) == 0:
+            st.error("Please fill at least one episode before starting debrief")
+        else:
+            # This will show Part 2 interface on the same computer
+            st.session_state.show_local_debrief = True
             st.rerun()
+    
+    st.caption("💡 **Tip:** Share the participant link (shown above) with remote participants, or click the button to do Part 2 on this computer")

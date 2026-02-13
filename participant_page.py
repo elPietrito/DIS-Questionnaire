@@ -71,25 +71,37 @@ def render_participant_page(participant_id):
         # Audio player
         st.audio(current_episode['audio1_path'])
         
-        # Text response
-        st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
-        current_episode['audio1_text_response'] = st.text_area(
-            "Text Response (Audio 1)",
-            value=current_episode.get('audio1_text_response', ''),
-            height=100,
-            key=f"audio1_text_{current_index}",
-            label_visibility="collapsed"
+        # "No answer" checkbox
+        no_answer_audio1 = st.checkbox(
+            "I cannot answer this audio",
+            key=f"no_answer_audio1_{current_index}",
+            value=(current_episode.get('audio1_text_response', '') == NO_ANSWER_VALUE)
         )
         
-        # Likert questions for Audio 1
-        st.markdown("**Please answer the following questions:**")
-        for q_idx, question in enumerate(PART2_AUDIO1_LIKERT_QUESTIONS):
-            current_episode['audio1_likert_answers'][q_idx] = st.select_slider(
-                question,
-                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-                value=current_episode['audio1_likert_answers'][q_idx] or LIKERT_MIN,
-                key=f"audio1_likert_{current_index}_q{q_idx}"
+        if no_answer_audio1:
+            # Mark as "No answer" and disable inputs
+            current_episode['audio1_text_response'] = NO_ANSWER_VALUE
+            st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
+        else:
+            # Text response
+            st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
+            current_episode['audio1_text_response'] = st.text_area(
+                "Text Response (Audio 1)",
+                value=current_episode.get('audio1_text_response', '') if current_episode.get('audio1_text_response', '') != NO_ANSWER_VALUE else '',
+                height=100,
+                key=f"audio1_text_{current_index}",
+                label_visibility="collapsed"
             )
+            
+            # Likert questions for Audio 1
+            st.markdown("**Please answer the following questions:**")
+            for q_idx, question in enumerate(PART2_AUDIO1_LIKERT_QUESTIONS):
+                current_episode['audio1_likert_answers'][q_idx] = st.select_slider(
+                    question,
+                    options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+                    value=current_episode['audio1_likert_answers'][q_idx] or LIKERT_MIN,
+                    key=f"audio1_likert_{current_index}_q{q_idx}"
+                )
         
         st.markdown("---")
     
@@ -104,25 +116,37 @@ def render_participant_page(participant_id):
         # Audio player
         st.audio(current_episode['audio2_path'])
         
-        # Text response
-        st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
-        current_episode['audio2_text_response'] = st.text_area(
-            "Text Response (Audio 2)",
-            value=current_episode.get('audio2_text_response', ''),
-            height=100,
-            key=f"audio2_text_{current_index}",
-            label_visibility="collapsed"
+        # "No answer" checkbox
+        no_answer_audio2 = st.checkbox(
+            "I cannot answer this audio",
+            key=f"no_answer_audio2_{current_index}",
+            value=(current_episode.get('audio2_text_response', '') == NO_ANSWER_VALUE)
         )
         
-        # Likert questions for Audio 2
-        st.markdown("**Please answer the following questions:**")
-        for q_idx, question in enumerate(PART2_AUDIO2_LIKERT_QUESTIONS):
-            current_episode['audio2_likert_answers'][q_idx] = st.select_slider(
-                question,
-                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-                value=current_episode['audio2_likert_answers'][q_idx] or LIKERT_MIN,
-                key=f"audio2_likert_{current_index}_q{q_idx}"
+        if no_answer_audio2:
+            # Mark as "No answer" and disable inputs
+            current_episode['audio2_text_response'] = NO_ANSWER_VALUE
+            st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
+        else:
+            # Text response
+            st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
+            current_episode['audio2_text_response'] = st.text_area(
+                "Text Response (Audio 2)",
+                value=current_episode.get('audio2_text_response', '') if current_episode.get('audio2_text_response', '') != NO_ANSWER_VALUE else '',
+                height=100,
+                key=f"audio2_text_{current_index}",
+                label_visibility="collapsed"
             )
+            
+            # Likert questions for Audio 2
+            st.markdown("**Please answer the following questions:**")
+            for q_idx, question in enumerate(PART2_AUDIO2_LIKERT_QUESTIONS):
+                current_episode['audio2_likert_answers'][q_idx] = st.select_slider(
+                    question,
+                    options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+                    value=current_episode['audio2_likert_answers'][q_idx] or LIKERT_MIN,
+                    key=f"audio2_likert_{current_index}_q{q_idx}"
+                )
         
         st.markdown("---")
     
@@ -160,6 +184,10 @@ def render_participant_page(participant_id):
     # ============================================
     
     if st.session_state.survey_completed:
-        st.success("🎉 Survey completed successfully!")
-        st.balloons()
+        st.success("✅ Survey completed successfully!")
         st.info("Thank you for your participation. You may now close this window.")
+        
+        # Show path to saved data
+        if st.session_state.participant_id:
+            csv_path = get_participant_csv_path(st.session_state.participant_id)
+            st.caption(f"Data saved to: {csv_path}")

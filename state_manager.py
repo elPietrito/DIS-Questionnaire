@@ -5,7 +5,7 @@
 # ============================================
 
 import streamlit as st
-from config import MAX_EPISODES, PART2_AUDIO1_LIKERT_QUESTIONS, PART2_AUDIO2_LIKERT_QUESTIONS
+from config import MAX_EPISODES, PART2_AUDIO1_LIKERT_QUESTIONS, PART2_AUDIO2_LIKERT_QUESTIONS, PART2_AUDIO1_YESNO_QUESTIONS, PART2_AUDIO2_YESNO_QUESTIONS
 
 
 def create_empty_episode():
@@ -28,9 +28,14 @@ def create_empty_episode():
         
         # Part 2 fields (Participant)
         'audio1_text_response': '',
+        'audio1_grammar_response': '',  # New: Grammar correction question
         'audio1_likert_answers': [None] * len(PART2_AUDIO1_LIKERT_QUESTIONS),
+        'audio1_yesno_answers': [None] * len(PART2_AUDIO1_YESNO_QUESTIONS),  # New: Yes/No questions
+        
         'audio2_text_response': '',
+        'audio2_grammar_response': '',  # New: Grammar correction question
         'audio2_likert_answers': [None] * len(PART2_AUDIO2_LIKERT_QUESTIONS),
+        'audio2_yesno_answers': [None] * len(PART2_AUDIO2_YESNO_QUESTIONS),  # New: Yes/No questions
     }
 
 
@@ -58,6 +63,10 @@ def initialize_session_state():
     # Flag to show local debrief (Part 2 on same computer)
     if 'show_local_debrief' not in st.session_state:
         st.session_state.show_local_debrief = False
+    
+    # Flag to track if data has been saved for remote participant
+    if 'data_saved_for_participant' not in st.session_state:
+        st.session_state.data_saved_for_participant = False
     
     # Flag to track if participant has finished Part 2
     if 'survey_completed' not in st.session_state:

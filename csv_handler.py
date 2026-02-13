@@ -39,13 +39,19 @@ def generate_csv_header():
         
         # ----- Part 2 columns (Participant - Audio 1) -----
         header.append(f"{episode_prefix}{AUDIO1_TEXT_SUFFIX}")
+        header.append(f"{episode_prefix}{AUDIO1_GRAMMAR_SUFFIX}")  # Grammar question
         for q_num in range(len(PART2_AUDIO1_LIKERT_QUESTIONS)):
             header.append(f"{episode_prefix}{AUDIO1_LIKERT_PREFIX}{q_num + 1}")
+        for q_num in range(len(PART2_AUDIO1_YESNO_QUESTIONS)):
+            header.append(f"{episode_prefix}{AUDIO1_YESNO_PREFIX}{q_num + 1}")  # Yes/No questions
         
         # ----- Part 2 columns (Participant - Audio 2) -----
         header.append(f"{episode_prefix}{AUDIO2_TEXT_SUFFIX}")
+        header.append(f"{episode_prefix}{AUDIO2_GRAMMAR_SUFFIX}")  # Grammar question
         for q_num in range(len(PART2_AUDIO2_LIKERT_QUESTIONS)):
             header.append(f"{episode_prefix}{AUDIO2_LIKERT_PREFIX}{q_num + 1}")
+        for q_num in range(len(PART2_AUDIO2_YESNO_QUESTIONS)):
+            header.append(f"{episode_prefix}{AUDIO2_YESNO_PREFIX}{q_num + 1}")  # Yes/No questions
     
     return header
 
@@ -81,15 +87,23 @@ def flatten_episodes_to_row(participant_id: str, episodes: list):
         
         # ----- Part 2 data: Audio 1 -----
         row.append(episode.get('audio1_text_response', ''))
+        row.append(episode.get('audio1_grammar_response', ''))  # Grammar question
         audio1_likert = episode.get('audio1_likert_answers', [])
         for i in range(len(PART2_AUDIO1_LIKERT_QUESTIONS)):
             row.append(audio1_likert[i] if i < len(audio1_likert) else '')
+        audio1_yesno = episode.get('audio1_yesno_answers', [])
+        for i in range(len(PART2_AUDIO1_YESNO_QUESTIONS)):
+            row.append(audio1_yesno[i] if i < len(audio1_yesno) else '')  # Yes/No questions
         
         # ----- Part 2 data: Audio 2 -----
         row.append(episode.get('audio2_text_response', ''))
+        row.append(episode.get('audio2_grammar_response', ''))  # Grammar question
         audio2_likert = episode.get('audio2_likert_answers', [])
         for i in range(len(PART2_AUDIO2_LIKERT_QUESTIONS)):
             row.append(audio2_likert[i] if i < len(audio2_likert) else '')
+        audio2_yesno = episode.get('audio2_yesno_answers', [])
+        for i in range(len(PART2_AUDIO2_YESNO_QUESTIONS)):
+            row.append(audio2_yesno[i] if i < len(audio2_yesno) else '')  # Yes/No questions
     
     return row
 

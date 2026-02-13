@@ -40,24 +40,51 @@ TEXT_RESPONSE_PROMPT = "Type your response here:"
 NO_ANSWER_VALUE = "No answer"  # This will be saved in CSV when participant chooses not to answer
 
 # --------------------------------------------
-# Audio 1 Likert Questions
-# ADD/REMOVE questions by editing this list
+# Audio 1 Questions (Part 2)
 # --------------------------------------------
+
+# Text response prompt (what they heard)
+AUDIO1_TEXT_RESPONSE_LABEL = "Type your response here:"
+
+# Grammar correction question (open text)
+AUDIO1_GRAMMAR_QUESTION = "Est-ce que la dernière réplique dite ou entendue pendant la rêverie est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+
+# Likert scale questions for Audio 1
+# ADD/REMOVE questions by editing this list
 PART2_AUDIO1_LIKERT_QUESTIONS = [
     "Audio 1 – Likert question 1",  # ← Edit question text here
-    "Audio 1 – Likert question 2",  # ← Edit question text here
-    # To add more questions, copy a line above and paste here
-    # Example: "Audio 1 – Likert question 3",
+    # Note: Second Likert question removed as requested
+]
+
+# Yes/No questions for Audio 1
+# ADD/REMOVE questions by editing this list
+PART2_AUDIO1_YESNO_QUESTIONS = [
+    "Audio 1 – Yes/No question 1",  # ← Edit question text here
+    "Audio 1 – Yes/No question 2",  # ← Edit question text here
 ]
 
 # --------------------------------------------
-# Audio 2 Likert Questions  
-# ADD/REMOVE questions by editing this list
+# Audio 2 Questions (Part 2)
 # --------------------------------------------
+
+# Text response prompt (what they heard)
+AUDIO2_TEXT_RESPONSE_LABEL = "Type your response here:"
+
+# Grammar correction question (open text)
+AUDIO2_GRAMMAR_QUESTION = "Est-ce que la dernière réplique dite ou entendue pendant la rêverie est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+
+# Likert scale questions for Audio 2
+# ADD/REMOVE questions by editing this list
 PART2_AUDIO2_LIKERT_QUESTIONS = [
     "Audio 2 – Likert question 1",  # ← Edit question text here
-    "Audio 2 – Likert question 2",  # ← Edit question text here
-    # To add more questions, copy a line above and paste here
+    # Note: Second Likert question removed as requested
+]
+
+# Yes/No questions for Audio 2
+# ADD/REMOVE questions by editing this list
+PART2_AUDIO2_YESNO_QUESTIONS = [
+    "Audio 2 – Yes/No question 1",  # ← Edit question text here
+    "Audio 2 – Yes/No question 2",  # ← Edit question text here
 ]
 
 # ============================================
@@ -89,9 +116,14 @@ CHOICE2_SUFFIX = "_choice2"
 
 # Part 2 column suffixes
 AUDIO1_TEXT_SUFFIX = "_audio1_text_response"
+AUDIO1_GRAMMAR_SUFFIX = "_audio1_grammar_response"
 AUDIO1_LIKERT_PREFIX = "_audio1_likert_q"
+AUDIO1_YESNO_PREFIX = "_audio1_yesno_q"
+
 AUDIO2_TEXT_SUFFIX = "_audio2_text_response"
+AUDIO2_GRAMMAR_SUFFIX = "_audio2_grammar_response"
 AUDIO2_LIKERT_PREFIX = "_audio2_likert_q"
+AUDIO2_YESNO_PREFIX = "_audio2_yesno_q"
 
 # ============================================
 # HELPER FUNCTIONS

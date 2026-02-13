@@ -130,10 +130,13 @@ def render_participant_page(participant_id):
         if no_answer_audio1:
             # Mark as "No answer" and disable inputs
             current_episode['audio1_text_response'] = NO_ANSWER_VALUE
+            current_episode['audio1_grammar_response'] = NO_ANSWER_VALUE
+            current_episode['audio1_likert_answers'] = [None] * len(PART2_AUDIO1_LIKERT_QUESTIONS)
+            current_episode['audio1_yesno_answers'] = [None] * len(PART2_AUDIO1_YESNO_QUESTIONS)
             st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
         else:
-            # Text response
-            st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
+            # 1. First text response (what they heard)
+            st.markdown(f"**{AUDIO1_TEXT_RESPONSE_LABEL}**")
             current_episode['audio1_text_response'] = st.text_area(
                 "Text Response (Audio 1)",
                 value=current_episode.get('audio1_text_response', '') if current_episode.get('audio1_text_response', '') != NO_ANSWER_VALUE else '',
@@ -142,7 +145,20 @@ def render_participant_page(participant_id):
                 label_visibility="collapsed"
             )
             
-            # Likert questions for Audio 1
+            # 2. Grammar correction question (new open text)
+            st.markdown("---")
+            st.markdown(f"**{AUDIO1_GRAMMAR_QUESTION}**")
+            current_episode['audio1_grammar_response'] = st.text_area(
+                "Grammar Response (Audio 1)",
+                value=current_episode.get('audio1_grammar_response', ''),
+                height=80,
+                key=f"audio1_grammar_{current_index}",
+                label_visibility="collapsed",
+                placeholder="Si oui, écrivez 'correct'. Si non, écrivez la formulation correcte."
+            )
+            
+            # 3. Likert questions
+            st.markdown("---")
             st.markdown("**Please answer the following questions:**")
             for q_idx, question in enumerate(PART2_AUDIO1_LIKERT_QUESTIONS):
                 current_episode['audio1_likert_answers'][q_idx] = st.select_slider(
@@ -151,6 +167,25 @@ def render_participant_page(participant_id):
                     value=current_episode['audio1_likert_answers'][q_idx] or LIKERT_MIN,
                     key=f"audio1_likert_{current_index}_q{q_idx}"
                 )
+            
+            # 4. Yes/No questions (new)
+            st.markdown("---")
+            for q_idx, question in enumerate(PART2_AUDIO1_YESNO_QUESTIONS):
+                # Use radio buttons for Yes/No
+                current_value = current_episode['audio1_yesno_answers'][q_idx]
+                if current_value is None:
+                    current_value = "No response"
+                
+                response = st.radio(
+                    question,
+                    options=["Yes", "No", "No response"],
+                    index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
+                    key=f"audio1_yesno_{current_index}_q{q_idx}",
+                    horizontal=True
+                )
+                
+                # Save the response (convert "No response" to None)
+                current_episode['audio1_yesno_answers'][q_idx] = response if response != "No response" else None
         
         st.markdown("---")
     
@@ -175,10 +210,13 @@ def render_participant_page(participant_id):
         if no_answer_audio2:
             # Mark as "No answer" and disable inputs
             current_episode['audio2_text_response'] = NO_ANSWER_VALUE
+            current_episode['audio2_grammar_response'] = NO_ANSWER_VALUE
+            current_episode['audio2_likert_answers'] = [None] * len(PART2_AUDIO2_LIKERT_QUESTIONS)
+            current_episode['audio2_yesno_answers'] = [None] * len(PART2_AUDIO2_YESNO_QUESTIONS)
             st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
         else:
-            # Text response
-            st.markdown(f"**{TEXT_RESPONSE_PROMPT}**")
+            # 1. First text response (what they heard)
+            st.markdown(f"**{AUDIO2_TEXT_RESPONSE_LABEL}**")
             current_episode['audio2_text_response'] = st.text_area(
                 "Text Response (Audio 2)",
                 value=current_episode.get('audio2_text_response', '') if current_episode.get('audio2_text_response', '') != NO_ANSWER_VALUE else '',
@@ -187,7 +225,20 @@ def render_participant_page(participant_id):
                 label_visibility="collapsed"
             )
             
-            # Likert questions for Audio 2
+            # 2. Grammar correction question (new open text)
+            st.markdown("---")
+            st.markdown(f"**{AUDIO2_GRAMMAR_QUESTION}**")
+            current_episode['audio2_grammar_response'] = st.text_area(
+                "Grammar Response (Audio 2)",
+                value=current_episode.get('audio2_grammar_response', ''),
+                height=80,
+                key=f"audio2_grammar_{current_index}",
+                label_visibility="collapsed",
+                placeholder="Si oui, écrivez 'correct'. Si non, écrivez la formulation correcte."
+            )
+            
+            # 3. Likert questions
+            st.markdown("---")
             st.markdown("**Please answer the following questions:**")
             for q_idx, question in enumerate(PART2_AUDIO2_LIKERT_QUESTIONS):
                 current_episode['audio2_likert_answers'][q_idx] = st.select_slider(
@@ -196,6 +247,25 @@ def render_participant_page(participant_id):
                     value=current_episode['audio2_likert_answers'][q_idx] or LIKERT_MIN,
                     key=f"audio2_likert_{current_index}_q{q_idx}"
                 )
+            
+            # 4. Yes/No questions (new)
+            st.markdown("---")
+            for q_idx, question in enumerate(PART2_AUDIO2_YESNO_QUESTIONS):
+                # Use radio buttons for Yes/No
+                current_value = current_episode['audio2_yesno_answers'][q_idx]
+                if current_value is None:
+                    current_value = "No response"
+                
+                response = st.radio(
+                    question,
+                    options=["Yes", "No", "No response"],
+                    index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
+                    key=f"audio2_yesno_{current_index}_q{q_idx}",
+                    horizontal=True
+                )
+                
+                # Save the response (convert "No response" to None)
+                current_episode['audio2_yesno_answers'][q_idx] = response if response != "No response" else None
         
         st.markdown("---")
     

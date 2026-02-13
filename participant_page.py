@@ -19,6 +19,14 @@ def render_participant_page(participant_id):
         participant_id: The participant's ID from URL parameter
     """
     st.title("🎧 Participant Interface - Part 2")
+    
+    # Show back button if in local debrief mode
+    if st.session_state.get('show_local_debrief', False):
+        if st.button("⬅️ Back to Part 1 (Experimenter)", key="back_to_part1"):
+            st.session_state.show_local_debrief = False
+            st.session_state.participant_episode_index = 0
+            st.rerun()
+    
     st.markdown("---")
     
     # ============================================

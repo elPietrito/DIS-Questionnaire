@@ -55,6 +55,10 @@ def initialize_session_state():
     if 'part1_completed' not in st.session_state:
         st.session_state.part1_completed = False
     
+    # Flag to show local debrief (Part 2 on same computer)
+    if 'show_local_debrief' not in st.session_state:
+        st.session_state.show_local_debrief = False
+    
     # Flag to track if participant has finished Part 2
     if 'survey_completed' not in st.session_state:
         st.session_state.survey_completed = False

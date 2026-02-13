@@ -161,10 +161,12 @@ def render_experimenter_page():
     )
     
     # Multiple choice for Audio 1
+    choice1_value = current_episode.get('choice1')
+    choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
     current_episode['choice1'] = st.selectbox(
         "Personnage (Audio 1)",
         options=PART1_CHOICE_OPTIONS,
-        index=PART1_CHOICE_OPTIONS.index(current_episode.get('choice1', PART1_CHOICE_OPTIONS[0])),
+        index=choice1_index,
         key=f"choice1_{episode_num}"
     )
     
@@ -207,10 +209,12 @@ def render_experimenter_page():
     )
     
     # Multiple choice for Audio 2
+    choice2_value = current_episode.get('choice2')
+    choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
     current_episode['choice2'] = st.selectbox(
         "Personnage (Audio 2)",
         options=PART1_CHOICE_OPTIONS,
-        index=PART1_CHOICE_OPTIONS.index(current_episode.get('choice2', PART1_CHOICE_OPTIONS[0])),
+        index=choice2_index,
         key=f"choice2_{episode_num}"
     )
     
@@ -225,12 +229,26 @@ def render_experimenter_page():
     active_episodes = get_active_episodes()
     st.info(f"**{len(active_episodes)} episode(s)** ready for participant")
     
-    if st.button("🚀 Generate Participant Link", type="primary", use_container_width=True):
-        if len(active_episodes) == 0:
-            st.error("Please fill at least one episode before generating link")
-        else:
-            st.session_state.part1_completed = True
-            st.rerun()
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🔗 Generate Participant Link", type="primary", use_container_width=True):
+            if len(active_episodes) == 0:
+                st.error("Please fill at least one episode before generating link")
+            else:
+                st.session_state.part1_completed = True
+                st.rerun()
+    
+    with col2:
+        if st.button("👤 Start Debrief (Local)", type="secondary", use_container_width=True):
+            if len(active_episodes) == 0:
+                st.error("Please fill at least one episode before starting debrief")
+            else:
+                # This will show Part 2 interface on the same computer
+                st.session_state.show_local_debrief = True
+                st.rerun()
+    
+    st.caption("💡 **Generate Link**: Get URL to share with remote participant | **Start Debrief**: Do Part 2 on this computer")
     
     # ============================================
     # SHOW PARTICIPANT LINK IF READY

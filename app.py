@@ -41,6 +41,15 @@ def main():
     participant_id = query_params.get("participant", None)
     
     # ============================================
+    # LOCAL DEBRIEF MODE (Experimenter clicks "Start Debrief")
+    # ============================================
+    
+    if st.session_state.get('show_local_debrief', False):
+        # Show Part 2 on the same computer
+        render_participant_page(st.session_state.participant_id)
+        return
+    
+    # ============================================
     # PARTICIPANT MODE (URL has ?participant=ID)
     # ============================================
     

@@ -9,6 +9,7 @@ import os
 from config import *
 from state_manager import *
 from csv_handler import save_all_data
+from data_persistence import load_experiment_data, experiment_data_exists
 
 
 def render_participant_page(participant_id):
@@ -30,8 +31,56 @@ def render_participant_page(participant_id):
     st.markdown("---")
     
     # ============================================
-    # LOAD PARTICIPANT DATA
+    # LOAD PARTICIPANT DATA FROM DISK
     # ============================================
+    
+    # If this is a remote participant (not local debrief), load data from disk
+    if not st.session_state.get('show_local_debrief', False):
+        # Check if data exists
+        if not experiment_data_exists(participant_id):
+            st.error(f"❌ No questionnaire data found for participant '{participant_id}'")
+            st.info("**Instructions:**")
+            st.markdown("""
+            1. The experimenter needs to complete Part 1 first
+            2. The experimenter should click **'🔗 Prepare for Remote Participant'**
+            3. Once ready, click the button below to start
+            """)
+            
+            if st.button("🔄 Check if Ready / Start Questionnaire", type="primary", use_container_width=True):
+                st.rerun()
+            
+            return
+        
+        # Data exists - show "Start" or "Refresh" button
+        if 'participant_data_loaded' not in st.session_state or not st.session_state.participant_data_loaded:
+            st.info("✅ Questionnaire data is ready!")
+            
+            if st.button("▶️ Start Questionnaire", type="primary", use_container_width=True):
+                # Load the data
+                loaded_data = load_experiment_data(participant_id)
+                if loaded_data:
+                    # Update session state with loaded episodes
+                    st.session_state.participant_id = loaded_data['participant_id']
+                    st.session_state.episodes = loaded_data['episodes']
+                    st.session_state.participant_data_loaded = True
+                    st.session_state.participant_episode_index = 0
+                    st.rerun()
+            
+            st.markdown("---")
+            st.caption("💡 If the experimenter makes changes, you can click this button again to reload the latest data.")
+            return
+        
+        # Allow refreshing data if needed
+        with st.expander("🔄 Reload Latest Data"):
+            st.caption("Click here if the experimenter made changes to the questionnaire")
+            if st.button("Reload Data from Experimenter", key="reload_data"):
+                loaded_data = load_experiment_data(participant_id)
+                if loaded_data:
+                    st.session_state.participant_id = loaded_data['participant_id']
+                    st.session_state.episodes = loaded_data['episodes']
+                    st.session_state.participant_episode_index = 0
+                    st.success("✅ Data reloaded!")
+                    st.rerun()
     
     # Set participant ID in session state
     if st.session_state.participant_id != participant_id:

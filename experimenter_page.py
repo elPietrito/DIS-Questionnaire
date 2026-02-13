@@ -8,6 +8,7 @@ import streamlit as st
 import os
 from config import *
 from state_manager import *
+from data_persistence import save_experiment_data
 
 def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num):
     """
@@ -241,7 +242,7 @@ def render_experimenter_page():
     st.markdown("---")
     
     # ============================================
-    # START DEBRIEF SECTION
+    # START PART 2 SECTION
     # ============================================
     
     st.subheader("✅ Ready to Start Part 2?")
@@ -249,12 +250,43 @@ def render_experimenter_page():
     active_episodes = get_active_episodes()
     st.info(f"**{len(active_episodes)} episode(s)** ready for participant")
     
-    if st.button("👤 Start Debrief (Part 2 on this computer)", type="primary", use_container_width=True):
-        if len(active_episodes) == 0:
-            st.error("Please fill at least one episode before starting debrief")
-        else:
-            # This will show Part 2 interface on the same computer
-            st.session_state.show_local_debrief = True
-            st.rerun()
+    col1, col2 = st.columns(2)
     
-    st.caption("💡 **Tip:** Share the participant link (shown above) with remote participants, or click the button to do Part 2 on this computer")
+    with col1:
+        st.markdown("#### 📱 Remote Participant")
+        st.caption("Participant will access via the link above on their device (tablet/phone)")
+        if st.button("🔗 Prepare for Remote Participant", type="primary", use_container_width=True):
+            if len(active_episodes) == 0:
+                st.error("Please fill at least one episode before preparing for participant")
+            else:
+                # Save data to disk so participant can load it
+                save_experiment_data(st.session_state.participant_id, st.session_state.episodes)
+                st.session_state.data_saved_for_participant = True
+                st.rerun()
+    
+    with col2:
+        st.markdown("#### 💻 Local Debrief")
+        st.caption("Do Part 2 on this same computer (for testing or in-person)")
+        if st.button("👤 Start Local Debrief", type="secondary", use_container_width=True):
+            if len(active_episodes) == 0:
+                st.error("Please fill at least one episode before starting debrief")
+            else:
+                # Save data to disk (just in case)
+                save_experiment_data(st.session_state.participant_id, st.session_state.episodes)
+                # Show Part 2 interface on the same computer
+                st.session_state.show_local_debrief = True
+                st.rerun()
+    
+    # Show success message if data was saved
+    if st.session_state.get('data_saved_for_participant', False):
+        st.success("✅ **Data saved successfully!**")
+        st.info("""
+        **Next steps:**
+        1. Share the participant link (shown above) with the participant
+        2. Participant opens the link and clicks **'Start Questionnaire'**
+        3. They can start even if you haven't finished all episodes - just click 'Prepare' again to update
+        """)
+        
+        if st.button("✏️ Continue Editing Episodes"):
+            st.session_state.data_saved_for_participant = False
+            st.rerun()

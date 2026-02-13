@@ -7,7 +7,7 @@ A two-part survey application for audio perception experiments.
 ```
 streamlit_survey/
 ├── app.py                    # Main entry point
-├── config.py                 # EDIT QUESTIONS HERE
+├── config.py                 # ⭐ EDIT QUESTIONS HERE ⭐
 ├── state_manager.py          # Session state management
 ├── experimenter_page.py      # Part 1 interface
 ├── participant_page.py       # Part 2 interface
@@ -19,7 +19,7 @@ streamlit_survey/
         └── responses.csv    # Survey responses
 ```
 
-## Setup Instructions
+## 🚀 Setup Instructions
 
 ### 1. Install Dependencies
 
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Usage for Phone Hotspot Setup
+## 📱 Usage for Phone Hotspot Setup
 
 ### Step 1: Set Up Hotspot
 1. Enable mobile hotspot on your phone

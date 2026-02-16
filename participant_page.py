@@ -19,7 +19,7 @@ def render_participant_page(participant_id):
     Args:
         participant_id: The participant's ID from URL parameter
     """
-    st.title("🎧 Participant Interface - Part 2")
+    st.title("🎧 Participant Interface")
     
     # Show back button if in local debrief mode
     if st.session_state.get('show_local_debrief', False):
@@ -38,24 +38,24 @@ def render_participant_page(participant_id):
     if not st.session_state.get('show_local_debrief', False):
         # Check if data exists
         if not experiment_data_exists(participant_id):
-            st.error(f"❌ No questionnaire data found for participant '{participant_id}'")
-            st.info("**Instructions:**")
+            st.error(f"❌ Aucune donnée issue du questionnaire n'a été trouvée pour le participant '{participant_id}'")
+            st.info("**Instructions :**")
             st.markdown("""
-            1. The experimenter needs to complete Part 1 first
-            2. The experimenter should click **'🔗 Prepare for Remote Participant'**
-            3. Once ready, click the button below to start
+            1. L'expérimentateur doit d'abord remplir la partie 1
+            2. L'expérimentateur doit cliquer **'🔗 Prepare for Remote Participant'**
+            3. Une fois prêt, cliquez sur le bouton ci-dessous pour commencer
             """)
             
-            if st.button("🔄 Check if Ready / Start Questionnaire", type="primary", use_container_width=True):
+            if st.button("🔄 Vérifier si prêt / Commencer le questionnaire", type="primary", use_container_width=True):
                 st.rerun()
             
             return
         
         # Data exists - show "Start" or "Refresh" button
         if 'participant_data_loaded' not in st.session_state or not st.session_state.participant_data_loaded:
-            st.info("✅ Questionnaire data is ready!")
+            st.info("✅ Les données du questionnaire sont prêtes !")
             
-            if st.button("▶️ Start Questionnaire", type="primary", use_container_width=True):
+            if st.button("▶️ Commencer le questionnaire", type="primary", use_container_width=True):
                 # Load the data
                 loaded_data = load_experiment_data(participant_id)
                 if loaded_data:
@@ -67,19 +67,19 @@ def render_participant_page(participant_id):
                     st.rerun()
             
             st.markdown("---")
-            st.caption("💡 If the experimenter makes changes, you can click this button again to reload the latest data.")
+            st.caption("💡 Si l'expérimentateur apporte des modifications, vous pouvez cliquer à nouveau sur ce bouton pour recharger les dernières données.")
             return
         
         # Allow refreshing data if needed
-        with st.expander("🔄 Reload Latest Data"):
-            st.caption("Click here if the experimenter made changes to the questionnaire")
-            if st.button("Reload Data from Experimenter", key="reload_data"):
+        with st.expander("🔄 Recharger les dernières données"):
+            st.caption("Cliquez ici si l'expérimentateur a apporté des modifications au questionnaire.")
+            if st.button("Recharger les données depuis Experimenter", key="reload_data"):
                 loaded_data = load_experiment_data(participant_id)
                 if loaded_data:
                     st.session_state.participant_id = loaded_data['participant_id']
                     st.session_state.episodes = loaded_data['episodes']
                     st.session_state.participant_episode_index = 0
-                    st.success("✅ Data reloaded!")
+                    st.success("✅ Données rechargées !")
                     st.rerun()
     
     # Set participant ID in session state
@@ -90,7 +90,7 @@ def render_participant_page(participant_id):
     active_episodes = get_active_episodes()
     
     if len(active_episodes) == 0:
-        st.error("No episodes found for this participant. Please check the participant ID.")
+        st.error("Aucun épisode trouvé pour ce participant. Veuillez vérifier l'identifiant du participant.")
         return
     
     # Initialize current episode index for participant navigation
@@ -122,7 +122,7 @@ def render_participant_page(participant_id):
         
         # "No answer" checkbox
         no_answer_audio1 = st.checkbox(
-            "I cannot answer this audio",
+            "Je ne peux/veux pas répondre à cet enregistrement audio.",
             key=f"no_answer_audio1_{current_index}",
             value=(current_episode.get('audio1_text_response', '') == NO_ANSWER_VALUE)
         )
@@ -133,7 +133,7 @@ def render_participant_page(participant_id):
             current_episode['audio1_grammar_response'] = NO_ANSWER_VALUE
             current_episode['audio1_likert_answers'] = [None] * len(PART2_AUDIO1_LIKERT_QUESTIONS)
             current_episode['audio1_yesno_answers'] = [None] * len(PART2_AUDIO1_YESNO_QUESTIONS)
-            st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
+            st.warning('✓ Marqué comme "No answer" - questions ignorées pour cet enregistrement audio')
         else:
             # 1. First text response (what they heard)
             st.markdown(f"**{AUDIO1_TEXT_RESPONSE_LABEL}**")
@@ -142,7 +142,8 @@ def render_participant_page(participant_id):
                 value=current_episode.get('audio1_text_response', '') if current_episode.get('audio1_text_response', '') != NO_ANSWER_VALUE else '',
                 height=100,
                 key=f"audio1_text_{current_index}",
-                label_visibility="collapsed"
+                label_visibility="collapsed",
+                placeholder="Tapez votre réponse ici..."
             )
             
             # 2. Grammar correction question (new open text)
@@ -154,12 +155,12 @@ def render_participant_page(participant_id):
                 height=80,
                 key=f"audio1_grammar_{current_index}",
                 label_visibility="collapsed",
-                placeholder="Si oui, écrivez 'correct'. Si non, écrivez la formulation correcte."
+                placeholder="Si oui, écrivez 'Oui'. Si non, écrivez la formulation correcte..."
             )
             
             # 3. Likert questions
             st.markdown("---")
-            st.markdown("**Please answer the following questions:**")
+            st.markdown("**Veuillez répondre aux questions suivantes :**")
             for q_idx, question in enumerate(PART2_AUDIO1_LIKERT_QUESTIONS):
                 current_episode['audio1_likert_answers'][q_idx] = st.select_slider(
                     question,
@@ -202,7 +203,7 @@ def render_participant_page(participant_id):
         
         # "No answer" checkbox
         no_answer_audio2 = st.checkbox(
-            "I cannot answer this audio",
+            "Je ne peux/veux pas répondre à cet enregistrement audio.",
             key=f"no_answer_audio2_{current_index}",
             value=(current_episode.get('audio2_text_response', '') == NO_ANSWER_VALUE)
         )
@@ -213,7 +214,7 @@ def render_participant_page(participant_id):
             current_episode['audio2_grammar_response'] = NO_ANSWER_VALUE
             current_episode['audio2_likert_answers'] = [None] * len(PART2_AUDIO2_LIKERT_QUESTIONS)
             current_episode['audio2_yesno_answers'] = [None] * len(PART2_AUDIO2_YESNO_QUESTIONS)
-            st.warning("✓ Marked as 'No answer' - skipping questions for this audio")
+            st.warning('✓ Marqué comme "No answer" - questions ignorées pour cet enregistrement audio')
         else:
             # 1. First text response (what they heard)
             st.markdown(f"**{AUDIO2_TEXT_RESPONSE_LABEL}**")
@@ -222,7 +223,8 @@ def render_participant_page(participant_id):
                 value=current_episode.get('audio2_text_response', '') if current_episode.get('audio2_text_response', '') != NO_ANSWER_VALUE else '',
                 height=100,
                 key=f"audio2_text_{current_index}",
-                label_visibility="collapsed"
+                label_visibility="collapsed",
+                placeholder="Tapez votre réponse ici..."
             )
             
             # 2. Grammar correction question (new open text)
@@ -239,7 +241,7 @@ def render_participant_page(participant_id):
             
             # 3. Likert questions
             st.markdown("---")
-            st.markdown("**Please answer the following questions:**")
+            st.markdown("**Veuillez répondre aux questions suivantes :**")
             for q_idx, question in enumerate(PART2_AUDIO2_LIKERT_QUESTIONS):
                 current_episode['audio2_likert_answers'][q_idx] = st.select_slider(
                     question,
@@ -278,18 +280,18 @@ def render_participant_page(participant_id):
     with col1:
         # Previous button
         if current_index > 0:
-            if st.button("⬅️ Previous Episode", use_container_width=True):
+            if st.button("⬅️ Épisode précédent", use_container_width=True):
                 st.session_state.participant_episode_index -= 1
                 st.rerun()
     
     with col2:
         # Next or Finish button
         if current_index < len(active_episodes) - 1:
-            if st.button("➡️ Next Episode", type="primary", use_container_width=True):
+            if st.button("➡️ Prochain épisode", type="primary", use_container_width=True):
                 st.session_state.participant_episode_index += 1
                 st.rerun()
         else:
-            if st.button("✅ Finish Survey", type="primary", use_container_width=True):
+            if st.button("✅ Terminer le questionnaire", type="primary", use_container_width=True):
                 # Save all data to CSV
                 try:
                     csv_path = save_all_data(participant_id, st.session_state.episodes)
@@ -303,8 +305,8 @@ def render_participant_page(participant_id):
     # ============================================
     
     if st.session_state.survey_completed:
-        st.success("✅ Survey completed successfully!")
-        st.info("Thank you for your participation. You may now close this window.")
+        st.success("✅ Questionnaire terminé avec succès !")
+        st.info("Merci de votre participation. Vous pouvez désormais fermer cette fenêtre.")
         
         # Show path to saved data
         if st.session_state.participant_id:

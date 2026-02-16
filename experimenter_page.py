@@ -77,17 +77,46 @@ def render_experimenter_page():
     
     st.success(f"**Participant ID:** {st.session_state.participant_id}")
     
-    # Get the participant link
-    # Use a simpler approach that works across different Streamlit versions
+    # Get the participant link - improved IP detection for phone hotspot
     import socket
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
+    
+    def get_local_ip():
+        """Get the local IP address that works with phone hotspot"""
+        try:
+            # Method 1: Try to connect to an external address (doesn't actually connect)
+            # This gets the IP address that would be used for internet connection
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))  # Google DNS
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except:
+            # Method 2: Fallback to hostname method
+            try:
+                return socket.gethostbyname(socket.gethostname())
+            except:
+                # Method 3: Last resort - localhost
+                return "127.0.0.1"
+    
+    local_ip = get_local_ip()
     participant_url = f"http://{local_ip}:8501/?participant={st.session_state.participant_id}"
     
     with st.expander("🔗 **Participant Link** (Click to expand)", expanded=False):
         st.code(participant_url, language=None)
         st.caption("📱 Share this link with the participant to access Part 2")
-        st.caption("💡 Make sure both devices are on the same WiFi/hotspot")
+        st.caption(f"💡 Your computer's IP: {local_ip}")
+        st.caption("🔧 If the link doesn't work, try these alternatives:")
+        
+        # Show alternative IPs
+        import subprocess
+        import platform
+        
+        if platform.system() == "Windows":
+            try:
+                result = subprocess.run(['ipconfig'], capture_output=True, text=True)
+                st.code(result.stdout, language=None)
+            except:
+                pass
     
     if st.button("🔄 Change Participant ID", key="change_participant"):
         reset_session()

@@ -167,106 +167,184 @@ def render_experimenter_page():
     # -------- AUDIO 1 SECTION --------
     st.subheader("🎵 Audio 1")
     
-    col1, col2 = st.columns([3, 1])
+    # Special case checkboxes (mutually exclusive)
+    col_check1, col_check2 = st.columns(2)
     
-    with col1:
-        audio1_file = st.file_uploader(
-            "Upload Audio 1",
-            type=['wav', 'mp3', 'ogg'],
-            key=f"audio1_upload_{episode_num}"
+    with col_check1:
+        no_answer_audio1 = st.checkbox(
+            "The participant wishes not to answer",
+            key=f"no_answer_audio1_{episode_num}",
+            value=(current_episode.get('audio1_path') == "The participant wishes not to answer")
         )
-        
-        # Save uploaded file
-        if audio1_file is not None:
-            path, filename = save_uploaded_audio(
-                audio1_file,
-                st.session_state.participant_id,
-                episode_num,
-                1
-            )
-            current_episode['audio1_path'] = path
-            current_episode['audio1_filename'] = filename
     
-    # Show current audio and player if exists
-    if current_episode.get('audio1_path') and os.path.exists(current_episode['audio1_path']):
-        st.success(f"✅ Audio 1 loaded: {current_episode.get('audio1_filename', 'audio1')}")
-        st.audio(current_episode['audio1_path'])
-        
-        # Likert scale for Audio 1 (only if audio exists)
-        current_episode['likert1'] = st.select_slider(
-            f"{PART1_LIKERT_1_LABEL} (Audio 1)",
-            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-            value=current_episode.get('likert1') or LIKERT_MIN,
-            key=f"likert1_{episode_num}"
+    with col_check2:
+        no_memory_audio1 = st.checkbox(
+            "The participant does not remember the answer",
+            key=f"no_memory_audio1_{episode_num}",
+            value=(current_episode.get('audio1_path') == "The participant does not remember the answer")
         )
-        
-        # Multiple choice for Audio 1 (only if audio exists)
-        choice1_value = current_episode.get('choice1')
-        choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
-        current_episode['choice1'] = st.selectbox(
-            "Personnage (Audio 1)",
-            options=PART1_CHOICE_OPTIONS,
-            index=choice1_index,
-            key=f"choice1_{episode_num}"
-        )
-    else:
-        # No audio uploaded - clear any saved values
+    
+    # Handle mutually exclusive checkboxes
+    if no_answer_audio1 and no_memory_audio1:
+        # If both are checked, uncheck the one that wasn't just clicked
+        # Default to keeping "no_answer" checked
+        no_memory_audio1 = False
+    
+    # Set the appropriate text if checkbox is selected
+    if no_answer_audio1:
+        current_episode['audio1_path'] = "The participant wishes not to answer"
+        current_episode['audio1_filename'] = None
         current_episode['likert1'] = None
         current_episode['choice1'] = None
-        st.info("⬆️ Upload Audio 1 to answer questions")
+        st.warning("⚠️ Audio 1 marked as: Participant wishes not to answer")
+    elif no_memory_audio1:
+        current_episode['audio1_path'] = "The participant does not remember the answer"
+        current_episode['audio1_filename'] = None
+        current_episode['likert1'] = None
+        current_episode['choice1'] = None
+        st.warning("⚠️ Audio 1 marked as: Participant does not remember")
+    else:
+        # Normal file upload flow (only show if no checkbox is selected)
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            audio1_file = st.file_uploader(
+                "Upload Audio 1",
+                type=['wav', 'mp3', 'ogg'],
+                key=f"audio1_upload_{episode_num}"
+            )
+            
+            # Save uploaded file
+            if audio1_file is not None:
+                path, filename = save_uploaded_audio(
+                    audio1_file,
+                    st.session_state.participant_id,
+                    episode_num,
+                    1
+                )
+                current_episode['audio1_path'] = path
+                current_episode['audio1_filename'] = filename
+        
+        # Show current audio and player if exists (and it's a real file path)
+        audio1_path = current_episode.get('audio1_path')
+        if audio1_path and audio1_path not in ["The participant wishes not to answer", "The participant does not remember the answer"] and os.path.exists(audio1_path):
+            st.success(f"✅ Audio 1 loaded: {current_episode.get('audio1_filename', 'audio1')}")
+            st.audio(audio1_path)
+            
+            # Likert scale for Audio 1 (only if audio exists)
+            current_episode['likert1'] = st.select_slider(
+                f"{PART1_LIKERT_1_LABEL} (Audio 1)",
+                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+                value=current_episode.get('likert1') or LIKERT_MIN,
+                key=f"likert1_{episode_num}"
+            )
+            
+            # Multiple choice for Audio 1 (only if audio exists)
+            choice1_value = current_episode.get('choice1')
+            choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+            current_episode['choice1'] = st.selectbox(
+                "Personnage (Audio 1)",
+                options=PART1_CHOICE_OPTIONS,
+                index=choice1_index,
+                key=f"choice1_{episode_num}"
+            )
+        else:
+            # No audio uploaded - clear any saved values
+            current_episode['likert1'] = None
+            current_episode['choice1'] = None
+            st.info("⬆️ Upload Audio 1 to answer questions")
     
     st.markdown("---")
     
     # -------- AUDIO 2 SECTION --------
     st.subheader("🎵 Audio 2")
     
-    col1, col2 = st.columns([3, 1])
+    # Special case checkboxes (mutually exclusive)
+    col_check1, col_check2 = st.columns(2)
     
-    with col1:
-        audio2_file = st.file_uploader(
-            "Upload Audio 2",
-            type=['wav', 'mp3', 'ogg'],
-            key=f"audio2_upload_{episode_num}"
+    with col_check1:
+        no_answer_audio2 = st.checkbox(
+            "The participant wishes not to answer",
+            key=f"no_answer_audio2_{episode_num}",
+            value=(current_episode.get('audio2_path') == "The participant wishes not to answer")
         )
-        
-        # Save uploaded file
-        if audio2_file is not None:
-            path, filename = save_uploaded_audio(
-                audio2_file,
-                st.session_state.participant_id,
-                episode_num,
-                2
-            )
-            current_episode['audio2_path'] = path
-            current_episode['audio2_filename'] = filename
     
-    # Show current audio and player if exists
-    if current_episode.get('audio2_path') and os.path.exists(current_episode['audio2_path']):
-        st.success(f"✅ Audio 2 loaded: {current_episode.get('audio2_filename', 'audio2')}")
-        st.audio(current_episode['audio2_path'])
-        
-        # Likert scale for Audio 2 (only if audio exists)
-        current_episode['likert2'] = st.select_slider(
-            f"{PART1_LIKERT_2_LABEL} (Audio 2)",
-            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-            value=current_episode.get('likert2') or LIKERT_MIN,
-            key=f"likert2_{episode_num}"
+    with col_check2:
+        no_memory_audio2 = st.checkbox(
+            "The participant does not remember the answer",
+            key=f"no_memory_audio2_{episode_num}",
+            value=(current_episode.get('audio2_path') == "The participant does not remember the answer")
         )
-        
-        # Multiple choice for Audio 2 (only if audio exists)
-        choice2_value = current_episode.get('choice2')
-        choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
-        current_episode['choice2'] = st.selectbox(
-            "Personnage (Audio 2)",
-            options=PART1_CHOICE_OPTIONS,
-            index=choice2_index,
-            key=f"choice2_{episode_num}"
-        )
-    else:
-        # No audio uploaded - clear any saved values
+    
+    # Handle mutually exclusive checkboxes
+    if no_answer_audio2 and no_memory_audio2:
+        # If both are checked, uncheck the one that wasn't just clicked
+        # Default to keeping "no_answer" checked
+        no_memory_audio2 = False
+    
+    # Set the appropriate text if checkbox is selected
+    if no_answer_audio2:
+        current_episode['audio2_path'] = "The participant wishes not to answer"
+        current_episode['audio2_filename'] = None
         current_episode['likert2'] = None
         current_episode['choice2'] = None
-        st.info("⬆️ Upload Audio 2 to answer questions")
+        st.warning("⚠️ Audio 2 marked as: Participant wishes not to answer")
+    elif no_memory_audio2:
+        current_episode['audio2_path'] = "The participant does not remember the answer"
+        current_episode['audio2_filename'] = None
+        current_episode['likert2'] = None
+        current_episode['choice2'] = None
+        st.warning("⚠️ Audio 2 marked as: Participant does not remember")
+    else:
+        # Normal file upload flow (only show if no checkbox is selected)
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            audio2_file = st.file_uploader(
+                "Upload Audio 2",
+                type=['wav', 'mp3', 'ogg'],
+                key=f"audio2_upload_{episode_num}"
+            )
+            
+            # Save uploaded file
+            if audio2_file is not None:
+                path, filename = save_uploaded_audio(
+                    audio2_file,
+                    st.session_state.participant_id,
+                    episode_num,
+                    2
+                )
+                current_episode['audio2_path'] = path
+                current_episode['audio2_filename'] = filename
+        
+        # Show current audio and player if exists (and it's a real file path)
+        audio2_path = current_episode.get('audio2_path')
+        if audio2_path and audio2_path not in ["The participant wishes not to answer", "The participant does not remember the answer"] and os.path.exists(audio2_path):
+            st.success(f"✅ Audio 2 loaded: {current_episode.get('audio2_filename', 'audio2')}")
+            st.audio(audio2_path)
+            
+            # Likert scale for Audio 2 (only if audio exists)
+            current_episode['likert2'] = st.select_slider(
+                f"{PART1_LIKERT_2_LABEL} (Audio 2)",
+                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+                value=current_episode.get('likert2') or LIKERT_MIN,
+                key=f"likert2_{episode_num}"
+            )
+            
+            # Multiple choice for Audio 2 (only if audio exists)
+            choice2_value = current_episode.get('choice2')
+            choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
+            current_episode['choice2'] = st.selectbox(
+                "Personnage (Audio 2)",
+                options=PART1_CHOICE_OPTIONS,
+                index=choice2_index,
+                key=f"choice2_{episode_num}"
+            )
+        else:
+            # No audio uploaded - clear any saved values
+            current_episode['likert2'] = None
+            current_episode['choice2'] = None
+            st.info("⬆️ Upload Audio 2 to answer questions")
     
     st.markdown("---")
     

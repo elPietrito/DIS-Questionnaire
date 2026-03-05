@@ -1,13 +1,14 @@
+
 # Audio Survey Application - Streamlit Version
 
 A two-part survey application for audio perception experiments.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 streamlit_survey/
 ├── app.py                    # Main entry point
-├── config.py                 # ⭐ EDIT QUESTIONS HERE ⭐
+├── config.py                 # EDIT/ADD QUESTIONS HERE 
 ├── state_manager.py          # Session state management
 ├── experimenter_page.py      # Part 1 interface
 ├── participant_page.py       # Part 2 interface
@@ -19,7 +20,7 @@ streamlit_survey/
         └── responses.csv    # Survey responses
 ```
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### 1. Install Dependencies
 
@@ -30,11 +31,23 @@ pip install -r requirements.txt
 ### 2. Customize Your Questions
 
 **Edit `config.py`** to change:
-- Question text (look for clear comments like `# ← Edit question text here`)
+- Question text, number of questions
 - Number of questions (add/remove lines in the question lists)
 - Likert scale range (LIKERT_MIN, LIKERT_MAX)
 - Maximum episodes (MAX_EPISODES)
 - CSV column labels
+
+**Edit `experimenter_page.py`** to change:
+- Structure of the audio upload
+- Placeholders for the question texts
+
+**Edit `participant_page.py`** to change:
+- Structure of the participant questionnaire and interface
+- Placeholders for the question texts
+
+**Edit `csv_handler.py`** to change:
+- Saved data format
+- Saved variables
 
 ### 3. Run the Application
 
@@ -42,12 +55,12 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## 📱 Usage for Phone Hotspot Setup
+## Usage for Hotspot Setup (local network)
 
 ### Step 1: Set Up Hotspot
-1. Enable mobile hotspot on your phone
-2. Connect your computer to the phone's hotspot
-3. Connect the tablet to the same hotspot
+1. Enable mobile hotspot on your computer running streamlit
+2. Connect the participant device to your computer hotspot
+3. Accept to keep the connection even if internet is absent
 
 ### Step 2: Run the Server
 1. On your computer, run: `streamlit run app.py`
@@ -62,9 +75,9 @@ streamlit run app.py
 2. Enter participant ID (e.g., "P001")
 3. For each episode:
    - Upload audio file 1
-   - Fill Likert scale and dropdown for audio 1
+   - Fill up questions
    - Upload audio file 2
-   - Fill Likert scale and dropdown for audio 2
+   - Fill up questions
 4. Use navigation buttons:
    - **Previous/Next**: Navigate between episodes
    - **Add Episode**: Create new episode (up to 5 total)
@@ -77,7 +90,7 @@ streamlit run app.py
 3. Participant will:
    - Listen to each audio
    - Type what they heard
-   - Answer Likert questions
+   - Answer questions
    - Navigate through all episodes
 4. Click "Finish Survey" to save data
 
@@ -86,27 +99,27 @@ CSV files are saved in:
 - `participants/{participant_id}/responses.csv` (individual)
 - `all_participants_data.csv` (all participants combined)
 
-## 🎯 Key Features
+## Key Features
 
-✅ **Experimenter can:**
+**Experimenter can:**
 - Add, edit, and delete episodes
 - Preview uploaded audio files
 - See progress at each step
 - Generate shareable participant link
 
-✅ **Participant can:**
+**Participant can:**
 - Listen to audio files in browser
 - Navigate between episodes
 - View progress indicator
 - Complete survey and save data
 
-✅ **Data Management:**
+**Data Management:**
 - Automatic folder creation
 - Individual + global CSV files
 - Preserves original audio filenames
 - Easy-to-analyze format
 
-## 📝 Customization Guide
+## Customization Guide
 
 ### To Change Questions:
 
@@ -141,10 +154,11 @@ LIKERT_MIN = 1  # Change minimum value
 LIKERT_MAX = 7  # Change maximum value (e.g., 1-7 scale)
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 **Problem:** Participant can't access the link
 - **Solution:** Make sure both devices are on the same WiFi/hotspot
+- **Solution:** Make sure your computer's firewall is not blocking access (check out "HOTSPOT_GUIDE")
 
 **Problem:** Audio files not playing
 - **Solution:** Use .wav, .mp3, or .ogg formats
@@ -152,7 +166,7 @@ LIKERT_MAX = 7  # Change maximum value (e.g., 1-7 scale)
 **Problem:** CSV not saving
 - **Solution:** Check that `participants/` folder has write permissions
 
-## 📊 CSV Output Format
+## CSV Output Format
 
 Each row contains:
 - Participant ID
@@ -162,9 +176,8 @@ Each row contains:
 
 Headers are auto-generated from your questions in `config.py`.
 
-## 🆘 Support
+## Support
 
 If you need to modify anything:
 1. Check `config.py` first (most settings are there)
-2. Look for comments starting with `# ←` for edit locations
-3. Each file has a header explaining its purpose
+2. Each file has a header explaining its purpose

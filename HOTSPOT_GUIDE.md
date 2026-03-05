@@ -56,7 +56,7 @@ In this example, the IP is `192.168.43.100`
 
 ## Common Issues & Solutions
 
-### ❌ Problem: "Can't reach this page" or "Connection refused"
+### Problem: "Can't reach this page" or "Connection refused"
 
 **Solution 1: Check Firewall**
 Windows Firewall might be blocking Streamlit:
@@ -77,7 +77,7 @@ Make absolutely sure you used:
 streamlit run app.py --server.address 0.0.0.0
 ```
 
-### ❌ Problem: Wrong IP Address Shown
+### Problem: Wrong IP Address Shown
 
 The app now tries to auto-detect the correct IP, but if it's wrong:
 1. Expand the "Participant Link" section
@@ -85,14 +85,14 @@ The app now tries to auto-detect the correct IP, but if it's wrong:
 3. Find your "Wireless LAN adapter" IPv4 address
 4. Manually build the URL: `http://YOUR_IP:8501/?participant=YOUR_ID`
 
-### ❌ Problem: Connection is Very Slow
+### Problem: Connection is Very Slow
 
 Phone hotspots can be slower than WiFi:
 1. Make sure you have good cellular signal
 2. Try moving to a location with better reception
 3. Consider using a regular WiFi router instead
 
-### ❌ Problem: Port 8501 Already in Use
+### Problem: Port 8501 Already in Use
 
 If you get an error about port 8501:
 ```bash

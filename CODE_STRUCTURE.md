@@ -43,7 +43,7 @@ This application has **6 Python files** that work together:
               ┌────────▼─────────┐
               │    config.py     │
               │                  │
-              │ ⭐ EDIT THIS! ⭐  │
+              │   EDIT THIS!     │
               │ • Questions      │
               │ • Settings       │
               │ • Labels         │
@@ -63,7 +63,7 @@ This application has **6 Python files** that work together:
       render_experimenter_page()  # Show Part 1
   ```
 
-### 2. **config.py** - The Settings File ⭐ EDIT HERE ⭐
+### 2. **config.py** - The Settings File 
 - **What it does:** Stores all questions, labels, and settings
 - **When to edit:** Every time you want to change questions!
 - **What you can change:**

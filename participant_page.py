@@ -122,7 +122,7 @@ def render_participant_page(participant_id):
         
         # "No answer" checkbox
         no_answer_audio1 = st.checkbox(
-            "Je ne peux/veux pas répondre à cet enregistrement audio.",
+            "Je ne peux/veux pas répondre aux questions concernant cet enregistrement audio.",
             key=f"no_answer_audio1_{current_index}",
             value=(current_episode.get('audio1_text_response', '') == NO_ANSWER_VALUE)
         )
@@ -169,7 +169,7 @@ def render_participant_page(participant_id):
                     key=f"audio1_likert_{current_index}_q{q_idx}"
                 )
             
-            # 4. Yes/No questions (new)
+            # 4. Yes/No questions 
             st.markdown("---")
             for q_idx, question in enumerate(PART2_AUDIO1_YESNO_QUESTIONS):
                 # Use radio buttons for Yes/No
@@ -179,14 +179,14 @@ def render_participant_page(participant_id):
                 
                 response = st.radio(
                     question,
-                    options=["Yes", "No", "No response"],
-                    index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
+                    options=["Oui", "Non", "Pas de réponse"],
+                    index=["Oui", "Non", "Pas de réponse"].index(current_value) if current_value in ["Oui", "Non", "Pas de réponse"] else 2,
                     key=f"audio1_yesno_{current_index}_q{q_idx}",
                     horizontal=True
                 )
                 
                 # Save the response (convert "No response" to None)
-                current_episode['audio1_yesno_answers'][q_idx] = response if response != "No response" else None
+                current_episode['audio1_yesno_answers'][q_idx] = response if response != "Pas de réponse" else None
         
         st.markdown("---")
     
@@ -250,7 +250,7 @@ def render_participant_page(participant_id):
                     key=f"audio2_likert_{current_index}_q{q_idx}"
                 )
             
-            # 4. Yes/No questions (new)
+            # 4. Yes/No questions 
             st.markdown("---")
             for q_idx, question in enumerate(PART2_AUDIO2_YESNO_QUESTIONS):
                 # Use radio buttons for Yes/No
@@ -260,14 +260,14 @@ def render_participant_page(participant_id):
                 
                 response = st.radio(
                     question,
-                    options=["Yes", "No", "No response"],
-                    index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
-                    key=f"audio2_yesno_{current_index}_q{q_idx}",
+                    options=["Oui", "Non", "Pas de réponse"],
+                    index=["Oui", "Non", "Pas de réponse"].index(current_value) if current_value in ["Oui", "Non", "Pas de réponse"] else 2,
+                    key=f"audio1_yesno_{current_index}_q{q_idx}",
                     horizontal=True
                 )
                 
                 # Save the response (convert "No response" to None)
-                current_episode['audio2_yesno_answers'][q_idx] = response if response != "No response" else None
+                current_episode['audio1_yesno_answers'][q_idx] = response if response != "Pas de réponse" else None
         
         st.markdown("---")
     

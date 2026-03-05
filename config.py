@@ -1,7 +1,6 @@
 # config.py
 # ============================================
 # SURVEY CONFIGURATION
-# Easy-to-edit settings for your experiment
 # ============================================
 
 import os

@@ -1,19 +1,9 @@
 # config.py
 # ============================================
 # SURVEY CONFIGURATION
-# Easy-to-edit settings for your experiment
 # ============================================
 
 import os
-from pathlib import Path
-
-# Load environment variables from .env file if it exists
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    # python-dotenv not installed, will use default paths
-    pass
 
 # ============================================
 # EXPERIMENT SETTINGS
@@ -40,10 +30,10 @@ PART1_CHOICE_OPTIONS = ["PP", "PS"]
 # ============================================
 
 # Instruction text shown above each audio for participants
-AUDIO_INSTRUCTION_TEXT = "Please listen carefully and try writing what you heard."
+AUDIO_INSTRUCTION_TEXT = "Écoutez attentivement l'enregistrement audio et essayez de répondre aux questions suivantes."
 
 # Prompt for text response field
-TEXT_RESPONSE_PROMPT = "Type your response here:"
+# TEXT_RESPONSE_PROMPT = "Type your response here:"
 
 # Special value for "No answer" option
 NO_ANSWER_VALUE = "No answer"  # This will be saved in CSV when participant chooses not to answer
@@ -53,7 +43,7 @@ NO_ANSWER_VALUE = "No answer"  # This will be saved in CSV when participant choo
 # --------------------------------------------
 
 # Text response prompt (what they heard)
-AUDIO1_TEXT_RESPONSE_LABEL = "Type your response here:"
+AUDIO1_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
@@ -62,15 +52,14 @@ AUDIO1_GRAMMAR_QUESTION = "Est-ce que la dernière réplique dite ou entendue pe
 # Likert scale questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_LIKERT_QUESTIONS = [
-    "Audio 1 – Likert question 1",  # ← Edit question text here
-    # Note: Second Likert question removed as requested
+    "Sur une échelle de 1 à 6, évaluez votre niveau de surprise concernant la dernière réplique pendant le {dream_word}",  # ← Edit question text here
 ]
 
 # Yes/No questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_YESNO_QUESTIONS = [
-    "Audio 1 – Yes/No question 1",  # ← Edit question text here
-    "Audio 1 – Yes/No question 2",  # ← Edit question text here
+    "Est-ce que la dernière réplique était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
+    "Est-ce que la dernière réplique serait cohérente dans votre vie réelle ?",  # ← Edit question text here
 ]
 
 # --------------------------------------------
@@ -78,47 +67,35 @@ PART2_AUDIO1_YESNO_QUESTIONS = [
 # --------------------------------------------
 
 # Text response prompt (what they heard)
-AUDIO2_TEXT_RESPONSE_LABEL = "Type your response here:"
+AUDIO2_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
-AUDIO2_GRAMMAR_QUESTION = "Est-ce que la dernière réplique dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernière réplique dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
 
 # Likert scale questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_LIKERT_QUESTIONS = [
-    "Audio 2 – Likert question 1",  # ← Edit question text here
-    # Note: Second Likert question removed as requested
+    "Sur une échelle de 1 à 6, évaluez votre niveau de surprise concernant la dernière réplique pendant le {dream_word}",  # ← Edit question text here
 ]
 
 # Yes/No questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_YESNO_QUESTIONS = [
-    "Audio 2 – Yes/No question 1",  # ← Edit question text here
-    "Audio 2 – Yes/No question 2",  # ← Edit question text here
+    "Est-ce que l'avant-dernière réplique était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
+    "Est-ce que l'avant-dernière réplique serait cohérente dans votre vie réelle ?",  # ← Edit question text here
 ]
 
 # ============================================
 # FILE PATHS AND FOLDERS
 # ============================================
 
-# Get participants folder from environment variable, or use default
-# If .env file exists (created by setup_external_folders.py), it will use external path
-# Otherwise, it will use local "participants" folder
-PARTICIPANT_ROOT_FOLDER = os.getenv('PARTICIPANTS_FOLDER', 'participants')
-
+PARTICIPANT_ROOT_FOLDER = "participants"  # Main folder for all participant data
 AUDIO_FOLDER_NAME = "audio_files"        # Subfolder for audio files
 CSV_FILENAME = "responses.csv"            # Name of the output CSV file
 
-# Global CSV that aggregates all participants
-# This will also be in the external folder if configured
-if os.getenv('PARTICIPANTS_FOLDER'):
-    # External folder configured - put global CSV in parent directory
-    _external_data_dir = str(Path(PARTICIPANT_ROOT_FOLDER).parent)
-    GLOBAL_CSV_PATH = os.path.join(_external_data_dir, "all_participants_data.csv")
-else:
-    # Default - put in current directory
-    GLOBAL_CSV_PATH = "all_participants_data.csv"
+# Global CSV that aggregates all participants (optional)
+GLOBAL_CSV_PATH = "all_participants_data.csv"
 
 # ============================================
 # CSV HEADER CUSTOMIZATION
@@ -129,23 +106,23 @@ PARTICIPANT_ID_COL = "participant_id"
 EPISODE_PREFIX = "E"  # Episode prefix in column names (E1, E2, etc.)
 
 # Part 1 column suffixes
-AUDIO1_PATH_SUFFIX = "_audio1_path"
-LIKERT1_SUFFIX = "_likert1"
-CHOICE1_SUFFIX = "_choice1"
-AUDIO2_PATH_SUFFIX = "_audio2_path"
-LIKERT2_SUFFIX = "_likert2"
-CHOICE2_SUFFIX = "_choice2"
+AUDIO1_PATH_SUFFIX = "_A1_path"
+LIKERT1_SUFFIX = "_A1_control"
+CHOICE1_SUFFIX = "_A1_personnage"
+AUDIO2_PATH_SUFFIX = "_A2_path"
+LIKERT2_SUFFIX = "A2_control"
+CHOICE2_SUFFIX = "_A2_personnage"
 
 # Part 2 column suffixes
-AUDIO1_TEXT_SUFFIX = "_audio1_text_response"
-AUDIO1_GRAMMAR_SUFFIX = "_audio1_grammar_response"
-AUDIO1_LIKERT_PREFIX = "_audio1_likert_q"
-AUDIO1_YESNO_PREFIX = "_audio1_yesno_q"
+AUDIO1_TEXT_SUFFIX = "_A1_text_response"
+AUDIO1_GRAMMAR_SUFFIX = "_A1_grammar_response"
+AUDIO1_LIKERT_PREFIX = "_A1_surprise"
+AUDIO1_YESNO_PREFIX = "_A1_coherence"
 
-AUDIO2_TEXT_SUFFIX = "_audio2_text_response"
-AUDIO2_GRAMMAR_SUFFIX = "_audio2_grammar_response"
-AUDIO2_LIKERT_PREFIX = "_audio2_likert_q"
-AUDIO2_YESNO_PREFIX = "_audio2_yesno_q"
+AUDIO2_TEXT_SUFFIX = "_A2_text_response"
+AUDIO2_GRAMMAR_SUFFIX = "_A2_grammar_response"
+AUDIO2_LIKERT_PREFIX = "_A2_surprise"
+AUDIO2_YESNO_PREFIX = "_A2_coherence"
 
 # ============================================
 # HELPER FUNCTIONS

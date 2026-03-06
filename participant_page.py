@@ -132,7 +132,7 @@ def render_participant_page(participant_id):
         
         # "No answer" checkbox
         no_answer_audio1 = st.checkbox(
-            "Je ne peux/veux pas répondre à cet enregistrement audio.",
+            "Je ne peux/veux pas répondre aux questions concernant cet enregistrement audio.",
             key=f"no_answer_audio1_{current_index}",
             value=(current_episode.get('audio1_text_response', '') == NO_ANSWER_VALUE)
         )
@@ -173,7 +173,7 @@ def render_participant_page(participant_id):
             st.markdown("**Veuillez répondre aux questions suivantes :**")
             for q_idx, question in enumerate(PART2_AUDIO1_LIKERT_QUESTIONS):
                 current_episode['audio1_likert_answers'][q_idx] = st.select_slider(
-                    question,
+                    question.format(dream_word=dream_word),  # Replace {dream_word}
                     options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
                     value=current_episode['audio1_likert_answers'][q_idx] or LIKERT_MIN,
                     key=f"audio1_likert_{current_index}_q{q_idx}"
@@ -188,8 +188,8 @@ def render_participant_page(participant_id):
                     current_value = "No response"
                 
                 response = st.radio(
-                    question,
-                    options=["Yes", "No", "No response"],
+                    question.format(dream_word=dream_word),  # Replace {dream_word}
+                    options=["Oui", "Non", "Pas de response"],
                     index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
                     key=f"audio1_yesno_{current_index}_q{q_idx}",
                     horizontal=True
@@ -215,7 +215,7 @@ def render_participant_page(participant_id):
         
         # "No answer" checkbox
         no_answer_audio2 = st.checkbox(
-            "Je ne peux/veux pas répondre à cet enregistrement audio.",
+            "Je ne peux/veux pas répondre aux questions concernant cet enregistrement audio.",
             key=f"no_answer_audio2_{current_index}",
             value=(current_episode.get('audio2_text_response', '') == NO_ANSWER_VALUE)
         )
@@ -255,7 +255,7 @@ def render_participant_page(participant_id):
             st.markdown("**Veuillez répondre aux questions suivantes :**")
             for q_idx, question in enumerate(PART2_AUDIO2_LIKERT_QUESTIONS):
                 current_episode['audio2_likert_answers'][q_idx] = st.select_slider(
-                    question,
+                    question.format(dream_word=dream_word),  # Replace {dream_word}
                     options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
                     value=current_episode['audio2_likert_answers'][q_idx] or LIKERT_MIN,
                     key=f"audio2_likert_{current_index}_q{q_idx}"
@@ -270,8 +270,8 @@ def render_participant_page(participant_id):
                     current_value = "No response"
                 
                 response = st.radio(
-                    question,
-                    options=["Yes", "No", "No response"],
+                    question.format(dream_word=dream_word),  # Replace {dream_word}
+                    options=["Oui", "Non", "Pas de response"],
                     index=["Yes", "No", "No response"].index(current_value) if current_value in ["Yes", "No", "No response"] else 2,
                     key=f"audio2_yesno_{current_index}_q{q_idx}",
                     horizontal=True

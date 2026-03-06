@@ -21,6 +21,12 @@ def render_participant_page(participant_id):
     """
     st.title("🎧 Participant Interface")
     
+    # Determine the correct word to use based on experiment type
+    # DM (Dreaming) → "rêve"
+    # MW (Mind-Wandering) → "rêverie"
+    experiment_type = st.session_state.get('experiment_type', 'DM')
+    dream_word = "rêve" if experiment_type == "DM" else "rêverie"
+    
     # Show back button if in local debrief mode
     if st.session_state.get('show_local_debrief', False):
         if st.button("⬅️ Back to Part 1 (Experimenter)", key="back_to_part1"):
@@ -152,7 +158,7 @@ def render_participant_page(participant_id):
             
             # 2. Grammar correction question (new open text)
             st.markdown("---")
-            st.markdown(f"**{AUDIO1_GRAMMAR_QUESTION}**")
+            st.markdown(f"**{AUDIO1_GRAMMAR_QUESTION.format(dream_word=dream_word)}**")
             current_episode['audio1_grammar_response'] = st.text_area(
                 "Grammar Response (Audio 1)",
                 value=current_episode.get('audio1_grammar_response', ''),
@@ -234,7 +240,7 @@ def render_participant_page(participant_id):
             
             # 2. Grammar correction question (new open text)
             st.markdown("---")
-            st.markdown(f"**{AUDIO2_GRAMMAR_QUESTION}**")
+            st.markdown(f"**{AUDIO2_GRAMMAR_QUESTION.format(dream_word=dream_word)}**")
             current_episode['audio2_grammar_response'] = st.text_area(
                 "Grammar Response (Audio 2)",
                 value=current_episode.get('audio2_grammar_response', ''),

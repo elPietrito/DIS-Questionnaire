@@ -25,7 +25,7 @@ def render_participant_page(participant_id):
     # DM (Dreaming) → "rêve"
     # MW (Mind-Wandering) → "rêverie"
     experiment_type = st.session_state.get('experiment_type', 'DM')
-    dream_word = "rêve" if experiment_type == "DM" else "rêverie"
+    dream_word = "rêve" if experiment_type == "DM" else "vagabondage mentale"
     
     # Show back button if in local debrief mode
     if st.session_state.get('show_local_debrief', False):

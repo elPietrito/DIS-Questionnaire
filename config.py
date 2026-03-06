@@ -76,7 +76,7 @@ AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernière réplique dite ou entend
 # Likert scale questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_LIKERT_QUESTIONS = [
-    "Sur une échelle de 1 à 6, évaluez votre niveau de surprise concernant la dernière réplique pendant le {dream_word}",  # ← Edit question text here
+    "Pendant le {dream_word}, à quel point la dernière réplique vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
 ]
 
 # Yes/No questions for Audio 2

@@ -53,7 +53,7 @@ def render_experimenter_page():
     # ============================================
     
     if st.session_state.participant_id is None:
-        st.subheader("Step 1: Enter Participant ID")
+        st.subheader("Step 1: Enter Participant Information")
         
         participant_input = st.text_input(
             "Participant ID:",
@@ -61,9 +61,23 @@ def render_experimenter_page():
             key="participant_input"
         )
         
+        st.markdown("---")
+        
+        # Experiment type selection
+        st.markdown("**Experiment Type:**")
+        exp_type = st.radio(
+            "Select experiment type:",
+            options=["Dreaming", "Mind-Wandering"],
+            key="exp_type_input",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+        
         if st.button("Start Survey", type="primary"):
             if participant_input.strip():
                 st.session_state.participant_id = participant_input.strip()
+                # Store experiment type (DM for Dreaming, MW for Mind-Wandering)
+                st.session_state.experiment_type = "DM" if exp_type == "Dreaming" else "MW"
                 ensure_participant_folders(st.session_state.participant_id)
                 st.rerun()
             else:
@@ -75,7 +89,9 @@ def render_experimenter_page():
     # SHOW PARTICIPANT LINK (always visible once ID is set)
     # ============================================
     
-    st.success(f"**Participant ID:** {st.session_state.participant_id}")
+    # Display participant info
+    exp_type_full = "Dreaming" if st.session_state.experiment_type == "DM" else "Mind-Wandering"
+    st.success(f"**Participant ID:** {st.session_state.participant_id} | **Experiment:** {exp_type_full} ({st.session_state.experiment_type})")
     
     # Get the participant link - improved IP detection for phone hotspot
     import socket
@@ -163,6 +179,38 @@ def render_experimenter_page():
     
     current_episode = get_current_episode()
     episode_num = st.session_state.current_episode_index + 1
+    
+    # ============================================
+    # EPISODE TIME INPUT (REQUIRED)
+    # ============================================
+    
+    st.subheader("⏰ Episode Time")
+    
+    # Time input with validation
+    time_input = st.text_input(
+        "Episode Time (HH:MM:SS format, required):",
+        value=current_episode.get('episode_time', ''),
+        placeholder="e.g., 14:30:45",
+        key=f"episode_time_{episode_num}",
+        help="Enter the time in HH:MM:SS format (24-hour)"
+    )
+    
+    # Validate time format
+    import re
+    time_pattern = re.compile(r'^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$')
+    
+    if time_input:
+        if time_pattern.match(time_input):
+            current_episode['episode_time'] = time_input
+            st.success(f"✅ Episode time set: {time_input}")
+        else:
+            current_episode['episode_time'] = None
+            st.error("❌ Invalid time format. Please use HH:MM:SS (e.g., 14:30:45)")
+    else:
+        current_episode['episode_time'] = None
+        st.warning("⚠️ Episode time is required before uploading audio")
+    
+    st.markdown("---")
     
     # -------- AUDIO 1 SECTION --------
     st.subheader("🎵 Audio 1")
@@ -366,10 +414,19 @@ def render_experimenter_page():
             if len(active_episodes) == 0:
                 st.error("Please fill at least one episode before preparing for participant")
             else:
-                # Save data to disk so participant can load it
-                save_experiment_data(st.session_state.participant_id, st.session_state.episodes)
-                st.session_state.data_saved_for_participant = True
-                st.rerun()
+                # Validate that all active episodes have times
+                missing_times = []
+                for idx, ep in enumerate(active_episodes):
+                    if not ep.get('episode_time'):
+                        missing_times.append(idx + 1)
+                
+                if missing_times:
+                    st.error(f"❌ Missing episode time for episode(s): {', '.join(map(str, missing_times))}. Please enter time in HH:MM:SS format.")
+                else:
+                    # Save data to disk so participant can load it
+                    save_experiment_data(st.session_state.participant_id, st.session_state.experiment_type, st.session_state.episodes)
+                    st.session_state.data_saved_for_participant = True
+                    st.rerun()
     
     with col2:
         st.markdown("#### 💻 Local Debrief")
@@ -378,8 +435,17 @@ def render_experimenter_page():
             if len(active_episodes) == 0:
                 st.error("Please fill at least one episode before starting debrief")
             else:
-                # Save data to disk (just in case)
-                save_experiment_data(st.session_state.participant_id, st.session_state.episodes)
+                # Validate that all active episodes have times
+                missing_times = []
+                for idx, ep in enumerate(active_episodes):
+                    if not ep.get('episode_time'):
+                        missing_times.append(idx + 1)
+                
+                if missing_times:
+                    st.error(f"❌ Missing episode time for episode(s): {', '.join(map(str, missing_times))}. Please enter time in HH:MM:SS format.")
+                else:
+                    # Save data to disk (just in case)
+                    save_experiment_data(st.session_state.participant_id, st.session_state.experiment_type, st.session_state.episodes)
                 # Show Part 2 interface on the same computer
                 st.session_state.show_local_debrief = True
                 st.rerun()

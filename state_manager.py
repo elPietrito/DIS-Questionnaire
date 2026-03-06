@@ -16,6 +16,9 @@ def create_empty_episode():
         Dictionary with empty/default values for all episode fields
     """
     return {
+        # Episode metadata
+        'episode_time': None,  # Time in HH:MM:SS format
+        
         # Part 1 fields (Experimenter)
         'audio1_path': None,
         'audio1_filename': None,  # Original filename for display
@@ -47,6 +50,10 @@ def initialize_session_state():
     # Participant identification
     if 'participant_id' not in st.session_state:
         st.session_state.participant_id = None
+    
+    # Experiment type (DM = Dreaming, MW = Mind-Wandering)
+    if 'experiment_type' not in st.session_state:
+        st.session_state.experiment_type = None
     
     # Episodes list (up to MAX_EPISODES)
     if 'episodes' not in st.session_state:

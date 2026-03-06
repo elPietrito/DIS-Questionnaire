@@ -61,6 +61,7 @@ def render_participant_page(participant_id):
                 if loaded_data:
                     # Update session state with loaded episodes
                     st.session_state.participant_id = loaded_data['participant_id']
+                    st.session_state.experiment_type = loaded_data.get('experiment_type', 'DM')  # Load experiment type
                     st.session_state.episodes = loaded_data['episodes']
                     st.session_state.participant_data_loaded = True
                     st.session_state.participant_episode_index = 0
@@ -77,6 +78,7 @@ def render_participant_page(participant_id):
                 loaded_data = load_experiment_data(participant_id)
                 if loaded_data:
                     st.session_state.participant_id = loaded_data['participant_id']
+                    st.session_state.experiment_type = loaded_data.get('experiment_type', 'DM')  # Load experiment type
                     st.session_state.episodes = loaded_data['episodes']
                     st.session_state.participant_episode_index = 0
                     st.success("✅ Données rechargées !")
@@ -297,7 +299,11 @@ def render_participant_page(participant_id):
             if st.button("✅ Terminer le questionnaire", type="primary", use_container_width=True):
                 # Save all data to CSV
                 try:
-                    csv_path = save_all_data(participant_id, st.session_state.episodes)
+                    csv_path = save_all_data(
+                        participant_id, 
+                        st.session_state.experiment_type, 
+                        st.session_state.episodes
+                    )
                     st.session_state.survey_completed = True
                     st.rerun()
                 except Exception as e:

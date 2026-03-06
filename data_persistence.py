@@ -13,13 +13,14 @@ def get_experiment_data_path(participant_id: str) -> str:
     return os.path.join(get_participant_folder(participant_id), "experiment_data.json")
 
 
-def save_experiment_data(participant_id: str, episodes: list):
+def save_experiment_data(participant_id: str, experiment_type: str, episodes: list):
     """
     Saves experiment data (Part 1) to a JSON file.
     This allows the participant to load the data when they open the link.
     
     Args:
         participant_id: Participant's ID
+        experiment_type: Experiment type code (DM or MW)
         episodes: List of episode dictionaries
     """
     data_path = get_experiment_data_path(participant_id)
@@ -27,6 +28,7 @@ def save_experiment_data(participant_id: str, episodes: list):
     # Convert episodes to JSON-serializable format
     data = {
         'participant_id': participant_id,
+        'experiment_type': experiment_type,
         'episodes': episodes
     }
     
@@ -44,7 +46,7 @@ def load_experiment_data(participant_id: str) -> dict:
         participant_id: Participant's ID
     
     Returns:
-        Dictionary with 'participant_id' and 'episodes', or None if not found
+        Dictionary with 'participant_id', 'experiment_type', and 'episodes', or None if not found
     """
     data_path = get_experiment_data_path(participant_id)
     
@@ -53,6 +55,10 @@ def load_experiment_data(participant_id: str) -> dict:
     
     with open(data_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
+    
+    # Handle old data format (backward compatibility)
+    if 'experiment_type' not in data:
+        data['experiment_type'] = 'DM'  # Default to DM for old data
     
     return data
 

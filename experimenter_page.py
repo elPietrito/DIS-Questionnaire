@@ -216,7 +216,7 @@ def render_experimenter_page():
     st.subheader("🎵 Audio 1")
     
     # Special case checkboxes (mutually exclusive)
-    col_check1, col_check2 = st.columns(2)
+    col_check1, col_check2, col_check3 = st.columns(3)
     
     with col_check1:
         no_answer_audio1 = st.checkbox(
@@ -232,6 +232,13 @@ def render_experimenter_page():
             value=(current_episode.get('audio1_path') == "The participant does not remember the answer")
         )
     
+    with col_check3:
+        no_speech_audio1 = st.checkbox(
+            "No speech",
+            key=f"no_speech_audio1_{episode_num}",
+            value=(current_episode.get('audio1_path') == "The participant did not have speech")
+        )
+    
     # Handle mutually exclusive checkboxes
     if no_answer_audio1 and no_memory_audio1:
         # If both are checked, uncheck the one that wasn't just clicked
@@ -245,12 +252,35 @@ def render_experimenter_page():
         current_episode['likert1'] = None
         current_episode['choice1'] = None
         st.warning("⚠️ Audio 1 marked as: Participant wishes not to answer")
+
     elif no_memory_audio1:
         current_episode['audio1_path'] = "The participant does not remember the answer"
         current_episode['audio1_filename'] = None
+        st.warning("⚠️ Audio 1 marked as: Participant does not remember")
+
+        # Show Likert and Character selection
+        current_episode['likert1'] = st.select_slider(
+            f"{PART1_LIKERT_1_LABEL} (Audio 1)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert1') or LIKERT_MIN,
+            key=f"likert1_{episode_num}"
+        )
+    
+        choice1_value = current_episode.get('choice1')
+        choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice1'] = st.selectbox(
+            "Personnage (Audio 1)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice1_index,
+            key=f"choice1_{episode_num}"
+        )
+
+    elif no_speech_audio1:
+        current_episode['audio1_path'] = "The participant did not have speech"
+        current_episode['audio1_filename'] = None
         current_episode['likert1'] = None
         current_episode['choice1'] = None
-        st.warning("⚠️ Audio 1 marked as: Participant does not remember")
+        st.warning("⚠️ Audio 1 marked as: Participant didn't have speech")
     else:
         # Normal file upload flow (only show if no checkbox is selected)
         col1, col2 = st.columns([3, 1])
@@ -273,34 +303,29 @@ def render_experimenter_page():
                 current_episode['audio1_path'] = path
                 current_episode['audio1_filename'] = filename
         
+        # Multiple choice for Audio 1 (always shown)
+        choice1_value = current_episode.get('choice1')
+        choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice1'] = st.selectbox(
+            "Personnage (Audio 1)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice1_index,
+            key=f"choice1_{episode_num}"
+        )
+
+        # Likert scale for Audio 1 (always shown)
+        current_episode['likert1'] = st.select_slider(
+            f"{PART1_LIKERT_1_LABEL} (Audio 1)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert1') or LIKERT_MIN,
+            key=f"likert1_{episode_num}"
+        )
+                
         # Show current audio and player if exists (and it's a real file path)
         audio1_path = current_episode.get('audio1_path')
         if audio1_path and audio1_path not in ["The participant wishes not to answer", "The participant does not remember the answer"] and os.path.exists(audio1_path):
             st.success(f"✅ Audio 1 loaded: {current_episode.get('audio1_filename', 'audio1')}")
             st.audio(audio1_path)
-            
-            # Likert scale for Audio 1 (only if audio exists)
-            current_episode['likert1'] = st.select_slider(
-                f"{PART1_LIKERT_1_LABEL} (Audio 1)",
-                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-                value=current_episode.get('likert1') or LIKERT_MIN,
-                key=f"likert1_{episode_num}"
-            )
-            
-            # Multiple choice for Audio 1 (only if audio exists)
-            choice1_value = current_episode.get('choice1')
-            choice1_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
-            current_episode['choice1'] = st.selectbox(
-                "Personnage (Audio 1)",
-                options=PART1_CHOICE_OPTIONS,
-                index=choice1_index,
-                key=f"choice1_{episode_num}"
-            )
-        else:
-            # No audio uploaded - clear any saved values
-            current_episode['likert1'] = None
-            current_episode['choice1'] = None
-            st.info("⬆️ Upload Audio 1 to answer questions")
     
     st.markdown("---")
     
@@ -308,7 +333,7 @@ def render_experimenter_page():
     st.subheader("🎵 Audio 2")
     
     # Special case checkboxes (mutually exclusive)
-    col_check1, col_check2 = st.columns(2)
+    col_check1, col_check2, col_check3 = st.columns(3)
     
     with col_check1:
         no_answer_audio2 = st.checkbox(
@@ -322,6 +347,13 @@ def render_experimenter_page():
             "The participant does not remember the answer",
             key=f"no_memory_audio2_{episode_num}",
             value=(current_episode.get('audio2_path') == "The participant does not remember the answer")
+        )
+
+    with col_check3:
+        no_speech_audio2 = st.checkbox(
+            "No speech",
+            key=f"no_speech_audio2_{episode_num}",
+            value=(current_episode.get('audio2_path') == "The participant did not have speech")
         )
     
     # Handle mutually exclusive checkboxes
@@ -337,12 +369,36 @@ def render_experimenter_page():
         current_episode['likert2'] = None
         current_episode['choice2'] = None
         st.warning("⚠️ Audio 2 marked as: Participant wishes not to answer")
+
     elif no_memory_audio2:
         current_episode['audio2_path'] = "The participant does not remember the answer"
         current_episode['audio2_filename'] = None
+        st.warning("⚠️ Audio 2 marked as: Participant does not remember")
+        
+        # Show Likert and Character selection
+        current_episode['likert2'] = st.select_slider(
+            f"{PART1_LIKERT_1_LABEL} (Audio 2)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert2') or LIKERT_MIN,
+            key=f"likert2_{episode_num}"
+        )
+    
+        choice2_value = current_episode.get('choice2')
+        choice2_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice2'] = st.selectbox(
+            "Personnage (Audio 2)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice2_index,
+            key=f"choice2_{episode_num}"
+        )
+
+    elif no_speech_audio2:
+        current_episode['audio2_path'] = "The participant did not have speech"
+        current_episode['audio2_filename'] = None
         current_episode['likert2'] = None
         current_episode['choice2'] = None
-        st.warning("⚠️ Audio 2 marked as: Participant does not remember")
+        st.warning("⚠️ Audio 2 marked as: Participant didn't have speech")
+    
     else:
         # Normal file upload flow (only show if no checkbox is selected)
         col1, col2 = st.columns([3, 1])
@@ -365,34 +421,30 @@ def render_experimenter_page():
                 current_episode['audio2_path'] = path
                 current_episode['audio2_filename'] = filename
         
+
+         # Multiple choice for Audio 2 (always shown)
+        choice2_value = current_episode.get('choice2')
+        choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
+        current_episode['choice2'] = st.selectbox(
+            "Personnage (Audio 2)",
+            options=PART1_CHOICE_OPTIONS,
+            index=choice2_index,
+            key=f"choice2_{episode_num}"
+        )
+
+        # Likert scale for Audio 2 (always shown)
+        current_episode['likert2'] = st.select_slider(
+            f"{PART1_LIKERT_2_LABEL} (Audio 2)",
+            options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
+            value=current_episode.get('likert2') or LIKERT_MIN,
+            key=f"likert2_{episode_num}"
+        )
+        
         # Show current audio and player if exists (and it's a real file path)
         audio2_path = current_episode.get('audio2_path')
         if audio2_path and audio2_path not in ["The participant wishes not to answer", "The participant does not remember the answer"] and os.path.exists(audio2_path):
             st.success(f"✅ Audio 2 loaded: {current_episode.get('audio2_filename', 'audio2')}")
             st.audio(audio2_path)
-            
-            # Likert scale for Audio 2 (only if audio exists)
-            current_episode['likert2'] = st.select_slider(
-                f"{PART1_LIKERT_2_LABEL} (Audio 2)",
-                options=list(range(LIKERT_MIN, LIKERT_MAX + 1)),
-                value=current_episode.get('likert2') or LIKERT_MIN,
-                key=f"likert2_{episode_num}"
-            )
-            
-            # Multiple choice for Audio 2 (only if audio exists)
-            choice2_value = current_episode.get('choice2')
-            choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
-            current_episode['choice2'] = st.selectbox(
-                "Personnage (Audio 2)",
-                options=PART1_CHOICE_OPTIONS,
-                index=choice2_index,
-                key=f"choice2_{episode_num}"
-            )
-        else:
-            # No audio uploaded - clear any saved values
-            current_episode['likert2'] = None
-            current_episode['choice2'] = None
-            st.info("⬆️ Upload Audio 2 to answer questions")
     
     st.markdown("---")
     

@@ -23,7 +23,7 @@ PART1_LIKERT_1_LABEL = "Control"  # Label for first audio's Likert scale
 PART1_LIKERT_2_LABEL = "Control"  # Label for second audio's Likert scale
 
 # Options for the "Personnage" dropdown (add/remove options here)
-PART1_CHOICE_OPTIONS = ["PP", "PS"]
+PART1_CHOICE_OPTIONS = ["PP", "PS", "Off-voice"]
 
 # ============================================
 # PART 2: PARTICIPANT QUESTIONS

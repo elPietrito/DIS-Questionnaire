@@ -47,19 +47,19 @@ AUDIO1_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
-AUDIO1_GRAMMAR_QUESTION = "Est-ce que la dernière réplique dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+AUDIO1_GRAMMAR_QUESTION = "Est-ce que le dernièr énoncé dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
 
 # Likert scale questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_LIKERT_QUESTIONS = [
-    "Pendant le {dream_word}, à quel point la dernière réplique vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
+    "Pendant le {dream_word}, à quel point le dernier énoncé vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
 ]
 
 # Yes/No questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_YESNO_QUESTIONS = [
-    "Est-ce que la dernière réplique était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
-    "Est-ce que la dernière réplique serait cohérente dans votre vie réelle ?",  # ← Edit question text here
+    "Est-ce que le dernier énoncé était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
+    "Est-ce que le dernier énoncé serait cohérente dans votre vie réelle ?",  # ← Edit question text here
 ]
 
 # --------------------------------------------
@@ -71,19 +71,19 @@ AUDIO2_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
-AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernière réplique dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernier énoncé dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
 
 # Likert scale questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_LIKERT_QUESTIONS = [
-    "Pendant le {dream_word}, à quel point la dernière réplique vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
+    "Pendant le {dream_word}, à quel point le dernièr énoncé vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
 ]
 
 # Yes/No questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_YESNO_QUESTIONS = [
-    "Est-ce que l'avant-dernière réplique était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
-    "Est-ce que l'avant-dernière réplique serait cohérente dans votre vie réelle ?",  # ← Edit question text here
+    "Est-ce que l'avant-dernier énoncé était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
+    "Est-ce que l'avant-dernier énoncé serait cohérente dans votre vie réelle ?",  # ← Edit question text here
 ]
 
 # ============================================

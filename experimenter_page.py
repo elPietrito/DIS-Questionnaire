@@ -9,6 +9,22 @@ import os
 from config import *
 from state_manager import *
 from data_persistence import save_experiment_data
+from datetime import datetime
+import pytz
+
+def get_current_time(timezone='Europe/Paris'):
+    """
+    Gets the current time in HH:MM:SS format from the specified timezone.
+    
+    Args:
+        timezone: Timezone string (e.g., 'Europe/Paris', 'America/New_York', 'UTC')
+    
+    Returns:
+        String in HH:MM:SS format
+    """
+    tz = pytz.timezone(timezone)
+    current_time = datetime.now(tz)
+    return current_time.strftime('%H:%M:%S')
 
 def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num):
     """
@@ -187,13 +203,20 @@ def render_experimenter_page():
     st.subheader("⏰ Episode Time")
     
     # Time input with validation
-    time_input = st.text_input(
-        "Episode Time (HH:MM:SS format, required):",
-        value=current_episode.get('episode_time', ''),
-        placeholder="e.g., 14:30:45",
-        key=f"episode_time_{episode_num}",
-        help="Enter the time in HH:MM:SS format (24-hour)"
-    )
+    col1, col2 = st.columns([3, 1])
+
+    with col2:
+        if st.button("🕐 Now", key=f"set_time_now_{episode_num}"):
+            current_episode['episode_time'] = get_current_time('Europe/Paris')
+            st.rerun()
+
+    with col1:
+        time_input = st.text_input(
+            "Episode Time (HH:MM:SS format, required):",
+            value=current_episode.get('episode_time', ''),
+            placeholder="e.g., 14:30:45",
+            key=f"episode_time_{episode_num}"
+        )
     
     # Validate time format
     import re

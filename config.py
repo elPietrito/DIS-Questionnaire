@@ -47,19 +47,19 @@ AUDIO1_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
-AUDIO1_GRAMMAR_QUESTION = "Est-ce que le dernièr énoncé dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+AUDIO1_GRAMMAR_QUESTION = "Est-ce que le dernièr énoncé dit ou entendu pendant le {dream_word} est grammaticalement correct pour vous ? Sinon, quelle aurait été la formulation correcte ?"
 
 # Likert scale questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_LIKERT_QUESTIONS = [
-    "Pendant le {dream_word}, à quel point le dernier énoncé vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
+    "Pendant le {dream_word}, à quel point le dernier énoncé vous a-t-il surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  
 ]
 
 # Yes/No questions for Audio 1
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO1_YESNO_QUESTIONS = [
-    "Est-ce que le dernier énoncé était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
-    "Est-ce que le dernier énoncé serait cohérente dans votre vie réelle ?",  # ← Edit question text here
+    "Est-ce que le dernier énoncé était cohérent dans le contexte du {dream_word} (ou par rapport à ce que vous étiez en train d’imaginer) ?",  
+    "Est-ce que le dernier énoncé serait cohérent dans votre vie réelle ?",  
 ]
 
 # --------------------------------------------
@@ -71,19 +71,19 @@ AUDIO2_TEXT_RESPONSE_LABEL = "Qu'avez vous dit/entendu dans l'enregistrement ?"
 
 # Grammar correction question (open text)
 # {dream_word} will be replaced with "rêve" (DM) or "rêverie" (MW) in participant interface
-AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernier énoncé dite ou entendue pendant le {dream_word} est grammaticalement correcte pour vous ? Sinon, quelle aurait été la formulation correcte ?"
+AUDIO2_GRAMMAR_QUESTION = "Est-ce que l'avant-dernier énoncé dit ou entendu pendant le {dream_word} est grammaticalement correct pour vous ? Sinon, quelle aurait été la formulation correcte ?"
 
 # Likert scale questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_LIKERT_QUESTIONS = [
-    "Pendant le {dream_word}, à quel point le dernièr énoncé vous a-t-elle surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  # ← Edit question text here
+    "Pendant le {dream_word}, à quel point le dernièr énoncé vous a-t-il surpris·e ? Evaluez votre niveau de surprise sur une échelle de 1 à 6.",  
 ]
 
 # Yes/No questions for Audio 2
 # ADD/REMOVE questions by editing this list
 PART2_AUDIO2_YESNO_QUESTIONS = [
-    "Est-ce que l'avant-dernier énoncé était cohérente dans le contexte du {dream_word} ?",  # ← Edit question text here
-    "Est-ce que l'avant-dernier énoncé serait cohérente dans votre vie réelle ?",  # ← Edit question text here
+    "Est-ce que l'avant-dernier énoncé était cohérent dans le contexte du {dream_word} (ou par rapport à ce que vous étiez en train d’imaginer) ?",  
+    "Est-ce que l'avant-dernier énoncé serait cohérent dans votre vie réelle ?",  
 ]
 
 # ============================================
@@ -136,9 +136,19 @@ def get_audio_folder(participant_id: str) -> str:
     """Returns the full path to a participant's audio folder."""
     return os.path.join(get_participant_folder(participant_id), AUDIO_FOLDER_NAME)
 
-def get_participant_csv_path(participant_id: str) -> str:
-    """Returns the full path to a participant's CSV file."""
-    return os.path.join(get_participant_folder(participant_id), CSV_FILENAME)
+def get_participant_csv_path(participant_id: str, experiment_type: str = None) -> str:
+    """
+    Returns the full path to a participant's CSV file.
+    
+    Args:
+        participant_id: Participant ID
+        experiment_type: Experiment type (DM or MW). If None, returns default path.
+    """
+    if experiment_type:
+        filename = f"responses_{experiment_type}.csv"
+    else:
+        filename = CSV_FILENAME
+    return os.path.join(get_participant_folder(participant_id), filename)
 
 def ensure_participant_folders(participant_id: str):
     """Creates participant folders if they don't exist."""

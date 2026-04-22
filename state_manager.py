@@ -34,11 +34,13 @@ def create_empty_episode():
         'audio1_grammar_response': '',  # New: Grammar correction question
         'audio1_likert_answers': [None] * len(PART2_AUDIO1_LIKERT_QUESTIONS),
         'audio1_yesno_answers': [None] * len(PART2_AUDIO1_YESNO_QUESTIONS),  # New: Yes/No questions
+        'audio1_remarks': '',           # Free text remarks after yes/no questions
         
         'audio2_text_response': '',
         'audio2_grammar_response': '',  # New: Grammar correction question
         'audio2_likert_answers': [None] * len(PART2_AUDIO2_LIKERT_QUESTIONS),
         'audio2_yesno_answers': [None] * len(PART2_AUDIO2_YESNO_QUESTIONS),  # New: Yes/No questions
+        'audio2_remarks': '',           # Free text remarks after yes/no questions
     }
 
 

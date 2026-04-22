@@ -39,6 +39,7 @@ def main():
     # Check for participant parameter in URL
     query_params = st.query_params
     participant_id = query_params.get("participant", None)
+    exp_type_param = query_params.get("exp", None)  # Get experiment type from URL (DM or MW)
     
     # ============================================
     # LOCAL DEBRIEF MODE (Experimenter clicks "Start Debrief")
@@ -54,7 +55,7 @@ def main():
     # ============================================
     
     if participant_id:
-        render_participant_page(participant_id)
+        render_participant_page(participant_id, exp_type_param)
     
     # ============================================
     # EXPERIMENTER MODE (Default, no URL parameter)

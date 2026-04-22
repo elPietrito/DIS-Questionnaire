@@ -8,9 +8,19 @@ import json
 import os
 from config import get_participant_folder
 
-def get_experiment_data_path(participant_id: str) -> str:
-    """Returns the path to the experiment data JSON file."""
-    return os.path.join(get_participant_folder(participant_id), "experiment_data.json")
+def get_experiment_data_path(participant_id: str, experiment_type: str = None) -> str:
+    """
+    Returns the path to the experiment data JSON file.
+    
+    Args:
+        participant_id: Participant ID
+        experiment_type: Experiment type (DM or MW). If None, returns default path.
+    """
+    if experiment_type:
+        filename = f"experiment_data_{experiment_type}.json"
+    else:
+        filename = "experiment_data.json"
+    return os.path.join(get_participant_folder(participant_id), filename)
 
 
 def save_experiment_data(participant_id: str, experiment_type: str, episodes: list):
@@ -23,7 +33,7 @@ def save_experiment_data(participant_id: str, experiment_type: str, episodes: li
         experiment_type: Experiment type code (DM or MW)
         episodes: List of episode dictionaries
     """
-    data_path = get_experiment_data_path(participant_id)
+    data_path = get_experiment_data_path(participant_id, experiment_type)
     
     # Convert episodes to JSON-serializable format
     data = {
@@ -38,17 +48,18 @@ def save_experiment_data(participant_id: str, experiment_type: str, episodes: li
     return data_path
 
 
-def load_experiment_data(participant_id: str) -> dict:
+def load_experiment_data(participant_id: str, experiment_type: str = None) -> dict:
     """
     Loads experiment data from JSON file.
     
     Args:
         participant_id: Participant's ID
+        experiment_type: Experiment type (DM or MW). If None, tries default path first.
     
     Returns:
         Dictionary with 'participant_id', 'experiment_type', and 'episodes', or None if not found
     """
-    data_path = get_experiment_data_path(participant_id)
+    data_path = get_experiment_data_path(participant_id, experiment_type)
     
     if not os.path.exists(data_path):
         return None
@@ -63,15 +74,16 @@ def load_experiment_data(participant_id: str) -> dict:
     return data
 
 
-def experiment_data_exists(participant_id: str) -> bool:
+def experiment_data_exists(participant_id: str, experiment_type: str = None) -> bool:
     """
     Checks if experiment data exists for a participant.
     
     Args:
         participant_id: Participant's ID
+        experiment_type: Experiment type (DM or MW). If None, checks default path.
     
     Returns:
         True if data exists, False otherwise
     """
-    data_path = get_experiment_data_path(participant_id)
+    data_path = get_experiment_data_path(participant_id, experiment_type)
     return os.path.exists(data_path)

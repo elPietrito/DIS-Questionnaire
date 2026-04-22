@@ -8,7 +8,7 @@ import streamlit as st
 import os
 from config import *
 from state_manager import *
-from data_persistence import save_experiment_data
+from data_persistence import save_experiment_data, load_experiment_data
 from datetime import datetime
 import pytz
 
@@ -26,7 +26,7 @@ def get_current_time(timezone='Europe/Paris'):
     current_time = datetime.now(tz)
     return current_time.strftime('%H:%M:%S')
 
-def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num):
+def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num, experiment_type=None):
     """
     Saves an uploaded audio file to the participant's audio folder.
     
@@ -35,6 +35,7 @@ def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num):
         participant_id: Participant's ID
         episode_num: Episode number (1-based)
         audio_num: Audio number (1 or 2)
+        experiment_type: Experiment type label ('DM' or 'MW'), prepended to filename
     
     Returns:
         Tuple of (full_path, filename)
@@ -42,9 +43,11 @@ def save_uploaded_audio(uploaded_file, participant_id, episode_num, audio_num):
     if uploaded_file is None:
         return None, None
     
-    # Create filename: episode1_audio1.wav
+    # Build filename: {EXP_TYPE}_episode{N}_audio{N}.ext
+    # e.g. DM_episode1_audio1.wav or MW_episode2_audio2.mp3
     extension = os.path.splitext(uploaded_file.name)[1]
-    filename = f"episode{episode_num}_audio{audio_num}{extension}"
+    exp_prefix = f"{experiment_type}_" if experiment_type else ""
+    filename = f"{exp_prefix}episode{episode_num}_audio{audio_num}{extension}"
     
     # Full path to save the file
     audio_folder = get_audio_folder(participant_id)
@@ -131,12 +134,13 @@ def render_experimenter_page():
                 return "127.0.0.1"
     
     local_ip = get_local_ip()
-    participant_url = f"http://{local_ip}:8501/?participant={st.session_state.participant_id}"
+    participant_url = f"http://{local_ip}:8501/?participant={st.session_state.participant_id}&exp={st.session_state.experiment_type}"
     
     with st.expander("🔗 **Participant Link** (Click to expand)", expanded=False):
         st.code(participant_url, language=None)
         st.caption("📱 Share this link with the participant to access Part 2")
         st.caption(f"💡 Your computer's IP: {local_ip}")
+        st.caption(f"⚙️ Experiment type: {st.session_state.experiment_type}")
         st.caption("🔧 If the link doesn't work, try these alternatives:")
         
         # Show alternative IPs
@@ -153,6 +157,42 @@ def render_experimenter_page():
     if st.button("🔄 Change Participant ID", key="change_participant"):
         reset_session()
         st.rerun()
+    
+    # Button to switch experiment type
+    st.markdown("---")
+    st.markdown("**🔄 Switch Experiment Type:**")
+    
+    col_switch1, col_switch2 = st.columns(2)
+    
+    current_exp = st.session_state.experiment_type
+    other_exp = "MW" if current_exp == "DM" else "DM"
+    other_exp_full = "Mind-Wandering" if other_exp == "MW" else "Dreaming"
+    
+    with col_switch1:
+        st.info(f"✅ Currently editing: **{exp_type_full} ({current_exp})**")
+    
+    with col_switch2:
+        if st.button(f"↔️ Switch to {other_exp_full} ({other_exp})", key="switch_exp_type"):
+            # Save current data before switching
+            save_experiment_data(st.session_state.participant_id, st.session_state.experiment_type, st.session_state.episodes)
+            
+            # Switch experiment type
+            st.session_state.experiment_type = other_exp
+            
+            # Try to load existing data for the new experiment type
+            loaded_data = load_experiment_data(st.session_state.participant_id, other_exp)
+            
+            if loaded_data:
+                # Load existing episodes for this experiment type
+                st.session_state.episodes = loaded_data['episodes']
+                st.session_state.current_episode_index = 0
+                st.success(f"✅ Loaded existing {other_exp_full} data")
+            else:
+                # Start fresh for this experiment type
+                st.session_state.episodes = [create_empty_episode()]
+                st.session_state.current_episode_index = 0
+            
+            st.rerun()
     
     st.markdown("---")
     
@@ -321,7 +361,8 @@ def render_experimenter_page():
                     audio1_file,
                     st.session_state.participant_id,
                     episode_num,
-                    1
+                    1,
+                    st.session_state.experiment_type
                 )
                 current_episode['audio1_path'] = path
                 current_episode['audio1_filename'] = filename
@@ -407,7 +448,7 @@ def render_experimenter_page():
         )
     
         choice2_value = current_episode.get('choice2')
-        choice2_index = PART1_CHOICE_OPTIONS.index(choice1_value) if choice1_value in PART1_CHOICE_OPTIONS else 0
+        choice2_index = PART1_CHOICE_OPTIONS.index(choice2_value) if choice2_value in PART1_CHOICE_OPTIONS else 0
         current_episode['choice2'] = st.selectbox(
             "Personnage (Audio 2)",
             options=PART1_CHOICE_OPTIONS,
@@ -439,7 +480,8 @@ def render_experimenter_page():
                     audio2_file,
                     st.session_state.participant_id,
                     episode_num,
-                    2
+                    2,
+                    st.session_state.experiment_type
                 )
                 current_episode['audio2_path'] = path
                 current_episode['audio2_filename'] = filename

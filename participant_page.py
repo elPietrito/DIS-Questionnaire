@@ -12,12 +12,13 @@ from csv_handler import save_all_data
 from data_persistence import load_experiment_data, experiment_data_exists
 
 
-def render_participant_page(participant_id):
+def render_participant_page(participant_id, exp_type_param=None):
     """
     Renders the participant interface (Part 2).
     
     Args:
         participant_id: The participant's ID from URL parameter
+        exp_type_param: Experiment type from URL parameter (DM or MW)
     """
     st.title("🎧 Participant Interface")
     
@@ -25,7 +26,7 @@ def render_participant_page(participant_id):
     # DM (Dreaming) → "rêve"
     # MW (Mind-Wandering) → "rêverie"
     experiment_type = st.session_state.get('experiment_type', 'DM')
-    dream_word = "rêve" if experiment_type == "DM" else "vagabondage mentale"
+    dream_word = "rêve" if experiment_type == "DM" else "rêverie"
     
     # Show back button if in local debrief mode
     if st.session_state.get('show_local_debrief', False):
@@ -42,14 +43,14 @@ def render_participant_page(participant_id):
     
     # If this is a remote participant (not local debrief), load data from disk
     if not st.session_state.get('show_local_debrief', False):
-        # Check if data exists
-        if not experiment_data_exists(participant_id):
-            st.error(f"❌ Aucune donnée issue du questionnaire n'a été trouvée pour le participant '{participant_id}'")
+        # Check if data exists for this specific experiment type
+        if not experiment_data_exists(participant_id, exp_type_param):
+            exp_label = "DM (Dreaming)" if exp_type_param == "DM" else "MW (Mind-Wandering)" if exp_type_param == "MW" else "ce type d'expérience"
+            st.error(f"❌ Aucune donnée issue du questionnaire n'a été trouvée pour le participant '{participant_id}' - {exp_label}")
             st.info("**Instructions :**")
             st.markdown("""
-            1. L'expérimentateur doit d'abord remplir la partie 1
-            2. L'expérimentateur doit cliquer **'🔗 Prepare for Remote Participant'**
-            3. Une fois prêt, cliquez sur le bouton ci-dessous pour commencer
+            1. L'expérimentateur doit d'abord finaliser le questionnaire
+            2. Une fois prêt, cliquez sur le bouton ci-dessous pour commencer
             """)
             
             if st.button("🔄 Vérifier si prêt / Commencer le questionnaire", type="primary", use_container_width=True):
@@ -62,12 +63,12 @@ def render_participant_page(participant_id):
             st.info("✅ Les données du questionnaire sont prêtes !")
             
             if st.button("▶️ Commencer le questionnaire", type="primary", use_container_width=True):
-                # Load the data
-                loaded_data = load_experiment_data(participant_id)
+                # Load the data for the specific experiment type
+                loaded_data = load_experiment_data(participant_id, exp_type_param)
                 if loaded_data:
                     # Update session state with loaded episodes
                     st.session_state.participant_id = loaded_data['participant_id']
-                    st.session_state.experiment_type = loaded_data.get('experiment_type', 'DM')  # Load experiment type
+                    st.session_state.experiment_type = loaded_data.get('experiment_type', exp_type_param or 'DM')  # Use exp_type_param
                     st.session_state.episodes = loaded_data['episodes']
                     st.session_state.participant_data_loaded = True
                     st.session_state.participant_episode_index = 0
@@ -81,7 +82,7 @@ def render_participant_page(participant_id):
         with st.expander("🔄 Recharger les dernières données"):
             st.caption("Cliquez ici si l'expérimentateur a apporté des modifications au questionnaire.")
             if st.button("Recharger les données depuis Experimenter", key="reload_data"):
-                loaded_data = load_experiment_data(participant_id)
+                loaded_data = load_experiment_data(participant_id, exp_type_param)
                 if loaded_data:
                     st.session_state.participant_id = loaded_data['participant_id']
                     st.session_state.experiment_type = loaded_data.get('experiment_type', 'DM')  # Load experiment type
@@ -197,6 +198,18 @@ def render_participant_page(participant_id):
                 
                 # Save the response (convert "No response" to None)
                 current_episode['audio1_yesno_answers'][q_idx] = response if response != "No response" else None
+
+            # 5. Free remarks
+            st.markdown("---")
+            st.markdown("**Remarques**")
+            current_episode['audio1_remarks'] = st.text_area(
+                "Remarques (Audio 1)",
+                value=current_episode.get('audio1_remarks', ''),
+                height=100,
+                key=f"audio1_remarks_{current_index}",
+                label_visibility="collapsed",
+                placeholder="Remarques éventuelles sur cet enregistrement..."
+            )
         
         st.markdown("---")
     
@@ -261,7 +274,7 @@ def render_participant_page(participant_id):
                     key=f"audio2_likert_{current_index}_q{q_idx}"
                 )
             
-            # 4. Yes/No questions (new)
+            # 4. Yes/No questions 
             st.markdown("---")
             for q_idx, question in enumerate(PART2_AUDIO2_YESNO_QUESTIONS):
                 # Use radio buttons for Yes/No
@@ -279,8 +292,18 @@ def render_participant_page(participant_id):
                 
                 # Save the response (convert "No response" to None)
                 current_episode['audio2_yesno_answers'][q_idx] = response if response != "No response" else None
-        
-        st.markdown("---")
+            
+            # 5. Free remarks
+            st.markdown("---")
+            st.markdown("**Remarques**")
+            current_episode['audio2_remarks'] = st.text_area(
+                "Remarques (Audio 2)",
+                value=current_episode.get('audio2_remarks', ''),
+                height=100,
+                key=f"audio2_remarks_{current_index}",
+                label_visibility="collapsed",
+                placeholder="Remarques éventuelles sur cet enregistrement..."
+            )
     
     # ============================================
     # NAVIGATION BUTTONS

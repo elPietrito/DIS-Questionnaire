@@ -47,7 +47,8 @@ def generate_csv_header():
         for q_num in range(len(PART2_AUDIO1_LIKERT_QUESTIONS)):
             header.append(f"{episode_prefix}{AUDIO1_LIKERT_PREFIX}{q_num + 1}")
         for q_num in range(len(PART2_AUDIO1_YESNO_QUESTIONS)):
-            header.append(f"{episode_prefix}{AUDIO1_YESNO_PREFIX}{q_num + 1}")  # Yes/No questions
+            header.append(f"{episode_prefix}{AUDIO1_YESNO_PREFIX}{q_num + 1}")
+        header.append(f"{episode_prefix}_A1_remarks")   # Free text remarks
         
         # ----- Part 2 columns (Participant - Audio 2) -----
         header.append(f"{episode_prefix}{AUDIO2_TEXT_SUFFIX}")
@@ -55,7 +56,8 @@ def generate_csv_header():
         for q_num in range(len(PART2_AUDIO2_LIKERT_QUESTIONS)):
             header.append(f"{episode_prefix}{AUDIO2_LIKERT_PREFIX}{q_num + 1}")
         for q_num in range(len(PART2_AUDIO2_YESNO_QUESTIONS)):
-            header.append(f"{episode_prefix}{AUDIO2_YESNO_PREFIX}{q_num + 1}")  # Yes/No questions
+            header.append(f"{episode_prefix}{AUDIO2_YESNO_PREFIX}{q_num + 1}")
+        header.append(f"{episode_prefix}_A2_remarks")   # Free text remarks
     
     return header
 
@@ -101,7 +103,8 @@ def flatten_episodes_to_row(participant_id: str, experiment_type: str, episodes:
             row.append(audio1_likert[i] if i < len(audio1_likert) else '')
         audio1_yesno = episode.get('audio1_yesno_answers', [])
         for i in range(len(PART2_AUDIO1_YESNO_QUESTIONS)):
-            row.append(audio1_yesno[i] if i < len(audio1_yesno) else '')  # Yes/No questions
+            row.append(audio1_yesno[i] if i < len(audio1_yesno) else '')
+        row.append(episode.get('audio1_remarks', ''))           # Free text remarks
         
         # ----- Part 2 data: Audio 2 -----
         row.append(episode.get('audio2_text_response', ''))
@@ -111,7 +114,8 @@ def flatten_episodes_to_row(participant_id: str, experiment_type: str, episodes:
             row.append(audio2_likert[i] if i < len(audio2_likert) else '')
         audio2_yesno = episode.get('audio2_yesno_answers', [])
         for i in range(len(PART2_AUDIO2_YESNO_QUESTIONS)):
-            row.append(audio2_yesno[i] if i < len(audio2_yesno) else '')  # Yes/No questions
+            row.append(audio2_yesno[i] if i < len(audio2_yesno) else '')
+        row.append(episode.get('audio2_remarks', ''))           # Free text remarks
     
     return row
 
@@ -129,7 +133,7 @@ def write_participant_csv(participant_id: str, experiment_type: str, episodes: l
         experiment_type: Experiment type code (DM or MW)
         episodes: List of episode dictionaries
     """
-    csv_path = get_participant_csv_path(participant_id)
+    csv_path = get_participant_csv_path(participant_id, experiment_type)
     
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)

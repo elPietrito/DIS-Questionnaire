@@ -249,6 +249,7 @@ def render_participant_page(participant_id, exp_type_param=None):
                 height=100,
                 key=f"audio2_text_{current_index}",
                 label_visibility="collapsed"
+                placeholder="Tapez votre réponse ici..."
             )
             
             # 2. Grammar correction question (new open text)

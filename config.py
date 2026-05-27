@@ -110,7 +110,7 @@ AUDIO1_PATH_SUFFIX = "_A1_path"
 LIKERT1_SUFFIX = "_A1_control"
 CHOICE1_SUFFIX = "_A1_personnage"
 AUDIO2_PATH_SUFFIX = "_A2_path"
-LIKERT2_SUFFIX = "A2_control"
+LIKERT2_SUFFIX = "_A2_control"
 CHOICE2_SUFFIX = "_A2_personnage"
 
 # Part 2 column suffixes
